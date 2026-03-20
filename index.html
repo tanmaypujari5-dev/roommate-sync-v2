@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roommate Sync — Find Your Perfect Roommate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080c18;--bg2:#0d1426;
+  --glass:rgba(255,255,255,0.045);--glass-b:rgba(255,255,255,0.10);--glass-h:rgba(255,255,255,0.075);
+  --v:#7c5cfc;--sky:#38bdf8;--rose:#f472b6;--teal:#2dd4bf;--amber:#fbbf24;--green:#4ade80;
+  --t1:#f0f4ff;--t2:#8892aa;--t3:#4a5568;
+  --r:20px;--rL:28px;--tr:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+
+/* BG */
+.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:drift 18s ease-in-out infinite alternate}
+.o1{width:560px;height:560px;background:radial-gradient(circle,#7c5cfc,transparent 70%);top:-120px;left:-100px}
+.o2{width:440px;height:440px;background:radial-gradient(circle,#38bdf8,transparent 70%);top:30%;right:-80px;animation-delay:-6s}
+.o3{width:380px;height:380px;background:radial-gradient(circle,#f472b6,transparent 70%);bottom:10%;left:20%;animation-delay:-12s}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.05)}100%{transform:translate(-20px,20px) scale(.97)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,12,24,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-b)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.3rem}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:10px;display:grid;place-items:center;font-size:1.1rem}
+.nav-links{display:flex;gap:8px}
+.nav-link{padding:8px 16px;color:var(--t2);font-size:.875rem;font-weight:500;text-decoration:none;border-radius:8px;transition:var(--tr)}
+.nav-link:hover{color:var(--t1);background:var(--glass)}
+
+/* HERO */
+.page-wrapper{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
+.hero{flex:1;display:grid;grid-template-columns:1fr 440px;gap:60px;align-items:center;max-width:1200px;margin:0 auto;padding:60px 40px;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.3);border-radius:9999px;font-size:.8rem;font-weight:600;color:#a78bfa;margin-bottom:24px;letter-spacing:.04em;text-transform:uppercase}
+.hero-badge::before{content:'✦';font-size:.7rem}
+h1{font-family:'Outfit',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:900;line-height:1.1;letter-spacing:-.04em;margin-bottom:20px}
+.grad{background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#7dd3fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.05rem;color:var(--t2);line-height:1.7;margin-bottom:32px;max-width:480px}
+.trust-row{display:flex;gap:16px;flex-wrap:wrap}
+.trust-chip{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9999px;font-size:.82rem;color:var(--t2)}
+.trust-dot{width:7px;height:7px;border-radius:50%}
+
+/* AUTH CARD */
+.auth-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(24px);overflow:hidden;position:relative}
+.auth-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,transparent 60%);pointer-events:none}
+.tab-row{display:flex;padding:6px;background:rgba(0,0,0,.2);margin:24px 24px 0;border-radius:12px;position:relative}
+.tab-btn{flex:1;padding:10px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;color:var(--t2);background:none;border:none;cursor:pointer;border-radius:8px;transition:var(--tr);position:relative;z-index:1}
+.tab-btn.active{color:var(--t1)}
+.tab-slide{position:absolute;top:6px;bottom:6px;width:calc(50% - 6px);background:rgba(255,255,255,.08);border-radius:8px;transition:var(--tr)}
+.tab-slide.right{left:calc(50% + 0px)}
+.tab-slide.left{left:6px}
+.card-body{padding:24px}
+.form-group{margin-bottom:18px}
+label.fl{display:block;font-size:.75rem;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.fi{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--glass-b);border-radius:12px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:var(--tr)}
+.fi:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(124,92,252,.15)}
+.fi::placeholder{color:var(--t3)}
+.fi-err{border-color:rgba(239,68,68,.5)!important}
+.err-msg{font-size:.75rem;color:#f87171;margin-top:5px;display:none}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--v),var(--sky));border:none;border-radius:12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 28px rgba(124,92,252,.35)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--t3);font-size:.8rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--glass-b)}
+.social-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-social{padding:11px;background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-social:hover{background:var(--glass-h);color:var(--t1)}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,20,40,.95);border:1px solid var(--glass-b);border-radius:12px;padding:14px 24px;font-size:.875rem;color:var(--t1);z-index:9999;transition:.4s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(74,222,128,.3);color:#4ade80}
+.toast.error{border-color:rgba(248,113,113,.3);color:#f87171}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;padding:24px 40px;color:var(--t3);font-size:.8rem;border-top:1px solid var(--glass-b);position:relative;z-index:2}
+footer a{color:var(--t2);text-decoration:none}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:40px 20px}.hero-text{text-align:center}.hero-sub{margin:0 auto 32px}.trust-row{justify-content:center}nav{padding:16px 20px}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grain"></div>
+
+<div class="page-wrapper">
+<nav>
+  <a href="index.html" class="brand"><div class="brand-icon">🏠</div>Roommate<span style="background:linear-gradient(135deg,var(--v),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Sync</span></a>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#features" class="nav-link">Features</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">AI-Powered Matching Engine v2.0</div>
+    <h1>Find compatible roommates,<br><span class="grad">not just rooms.</span></h1>
+    <p class="hero-sub">Stop gambling with your living situation. Our AI matches you based on sleep schedules, cleanliness standards, and financial compatibility — before you sign a lease.</p>
+    <div class="trust-row">
+      <div class="trust-chip"><div class="trust-dot" style="background:var(--green)"></div>Verified Profiles</div>
+      <div class="trust-chip"><div class="trust-dot" style="background:var(--v)"></div>AI Compatibility</div>
+      <div class="trust-chip"><div class="trust-dot" style="background:var(--sky)"></div>Real-time Chat</div>
+    </div>
+  </div>
+
+  <div class="auth-card">
+    <div class="tab-row">
+      <div class="tab-slide left" id="tabSlide"></div>
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log In</button>
+      <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="card-body">
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <div class="form-group">
+          <label class="fl">Email</label>
+          <input type="email" id="loginEmail" class="fi" placeholder="name@example.com">
+          <div class="err-msg" id="loginEmailErr">Please enter a valid email</div>
+        </div>
+        <div class="form-group">
+          <label class="fl">Password</label>
+          <input type="password" id="loginPassword" class="fi" placeholder="••••••••">
+          <div class="err-msg" id="loginPassErr">Password must be at least 6 characters</div>
+        </div>
+        <button class="btn-primary" id="loginBtn" onclick="handleLogin()">
+          <div class="spinner" id="loginSpinner"></div>
+          <span id="loginBtnText">Continue to Dashboard</span>
+        </button>
+        <div style="text-align:center;margin-top:12px">
+          <a href="#" onclick="forgotPassword()" style="font-size:.8rem;color:var(--t2);text-decoration:none">Forgot password?</a>
+        </div>
+        <div class="divider">or continue with</div>
+        <div class="social-row">
+          <button class="btn-social" onclick="googleLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="btn-social" onclick="showToast('LinkedIn login coming soon','error')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </button>
+        </div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signupForm" style="display:none">
+        <div class="form-group">
+          <label class="fl">Full Name</label>
+          <input type="text" id="signupName" class="fi" placeholder="Your full name">
+          <div class="err-msg" id="signupNameErr">Please enter your name</div>
+        </div>
+        <div class="form-group">
+          <label class="fl">Email</label>
+          <input type="email" id="signupEmail" class="fi" placeholder="name@example.com">
+          <div class="err-msg" id="signupEmailErr">Please enter a valid email</div>
+        </div>
+        <div class="form-group">
+          <label class="fl">Password</label>
+          <input type="password" id="signupPassword" class="fi" placeholder="Min 6 characters">
+          <div class="err-msg" id="signupPassErr">Password must be at least 6 characters</div>
+        </div>
+        <div class="form-group">
+          <label class="fl">Confirm Password</label>
+          <input type="password" id="signupConfirm" class="fi" placeholder="Repeat password">
+          <div class="err-msg" id="signupConfirmErr">Passwords don't match</div>
+        </div>
+        <button class="btn-primary" id="signupBtn" onclick="handleSignup()">
+          <div class="spinner" id="signupSpinner"></div>
+          <span id="signupBtnText">Create Account</span>
+        </button>
+        <div class="divider">or</div>
+        <button class="btn-social" style="width:100%" onclick="googleLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Sign up with Google
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Roommate Sync Inc. &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></p>
+</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// Redirect if already logged in
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists() && snap.data().quizCompleted) {
+      window.location.href = "find-roommates.html";
+    } else {
+      window.location.href = "quiz.html";
+    }
+  }
+});
+
+// Tab switching
+window.switchTab = (tab) => {
+  const slide = document.getElementById('tabSlide');
+  const loginBtn = document.getElementById('tabLogin');
+  const signupBtn = document.getElementById('tabSignup');
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  if (tab === 'login') {
+    slide.className = 'tab-slide left';
+    loginBtn.classList.add('active'); signupBtn.classList.remove('active');
+    loginForm.style.display = 'block'; signupForm.style.display = 'none';
+  } else {
+    slide.className = 'tab-slide right';
+    signupBtn.classList.add('active'); loginBtn.classList.remove('active');
+    signupForm.style.display = 'block'; loginForm.style.display = 'none';
+  }
+};
+
+window.showToast = (msg, type = 'success') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+};
+
+function setLoading(id, loading) {
+  const btn = document.getElementById(id + 'Btn');
+  const spinner = document.getElementById(id + 'Spinner');
+  const text = document.getElementById(id + 'BtnText');
+  btn.disabled = loading;
+  spinner.style.display = loading ? 'block' : 'none';
+  text.style.opacity = loading ? '.5' : '1';
+}
+
+function clearErrors() {
+  document.querySelectorAll('.err-msg').forEach(e => e.style.display = 'none');
+  document.querySelectorAll('.fi').forEach(f => f.classList.remove('fi-err'));
+}
+
+function showError(fieldId, errId) {
+  document.getElementById(fieldId).classList.add('fi-err');
+  document.getElementById(errId).style.display = 'block';
+}
+
+window.handleLogin = async () => {
+  clearErrors();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  let valid = true;
+  if (!email || !email.includes('@')) { showError('loginEmail','loginEmailErr'); valid = false; }
+  if (pass.length < 6) { showError('loginPassword','loginPassErr'); valid = false; }
+  if (!valid) return;
+  setLoading('login', true);
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    setLoading('login', false);
+    const msg = e.code === 'auth/user-not-found' ? 'No account found with this email' :
+                e.code === 'auth/wrong-password' ? 'Incorrect password' : 'Login failed. Please try again.';
+    showToast(msg, 'error');
+  }
+};
+
+window.handleSignup = async () => {
+  clearErrors();
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+  let valid = true;
+  if (!name) { showError('signupName','signupNameErr'); valid = false; }
+  if (!email || !email.includes('@')) { showError('signupEmail','signupEmailErr'); valid = false; }
+  if (pass.length < 6) { showError('signupPassword','signupPassErr'); valid = false; }
+  if (pass !== confirm) { showError('signupConfirm','signupConfirmErr'); valid = false; }
+  if (!valid) return;
+  setLoading('signup', true);
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db, "users", cred.user.uid), {
+      name, email, uid: cred.user.uid,
+      quizCompleted: false, createdAt: serverTimestamp()
+    });
+  } catch(e) {
+    setLoading('signup', false);
+    const msg = e.code === 'auth/email-already-in-use' ? 'An account with this email already exists' : 'Signup failed. Please try again.';
+    showToast(msg, 'error');
+  }
+};
+
+window.googleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+      await setDoc(doc(db, "users", user.uid), {
+        name: user.displayName, email: user.email, uid: user.uid,
+        quizCompleted: false, createdAt: serverTimestamp()
+      });
+    }
+  } catch(e) {
+    showToast('Google login failed. Try again.', 'error');
+  }
+};
+
+window.forgotPassword = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showToast('Enter your email first', 'error'); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast('Password reset email sent!', 'success');
+  } catch(e) {
+    showToast('Could not send reset email', 'error');
+  }
+};
+</script>
+</body>
+</html>

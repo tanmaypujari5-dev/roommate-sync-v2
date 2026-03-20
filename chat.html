@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat — Roommate Sync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080c18;--bg2:#0d1426;--glass:rgba(255,255,255,0.045);--glass-b:rgba(255,255,255,0.10);--glass-h:rgba(255,255,255,0.075);--v:#7c5cfc;--sky:#38bdf8;--rose:#f472b6;--green:#4ade80;--t1:#f0f4ff;--t2:#8892aa;--t3:#4a5568;--tr:0.3s cubic-bezier(0.4,0,0.2,1)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.2;animation:drift 18s ease-in-out infinite alternate}
+.o1{width:500px;height:500px;background:radial-gradient(circle,#7c5cfc,transparent 70%);top:-100px;left:-80px}
+.o2{width:400px;height:400px;background:radial-gradient(circle,#38bdf8,transparent 70%);bottom:0;right:-60px;animation-delay:-8s}
+@keyframes drift{0%{transform:translate(0,0)}100%{transform:translate(20px,-20px)}}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:rgba(8,12,24,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-b);position:relative;z-index:10;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem}
+.brand-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:9px;display:grid;place-items:center;font-size:.85rem}
+.nav-right{display:flex;align-items:center;gap:10px}
+.btn-back{padding:8px 16px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9px;color:var(--t2);font-size:.83rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
+.btn-back:hover{background:var(--glass-h);color:var(--t1)}
+.chat-layout{display:flex;flex:1;overflow:hidden;position:relative;z-index:2}
+/* Sidebar */
+.chat-sidebar{width:280px;border-right:1px solid var(--glass-b);background:rgba(8,12,24,.6);backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sidebar-header{padding:18px 20px 14px;border-bottom:1px solid var(--glass-b)}
+.sidebar-title{font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
+.conv-list{flex:1;overflow-y:auto;padding:8px}
+.conv-list::-webkit-scrollbar{width:3px}
+.conv-list::-webkit-scrollbar-track{background:transparent}
+.conv-list::-webkit-scrollbar-thumb{background:var(--glass-b);border-radius:9999px}
+.conv-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:var(--tr)}
+.conv-item:hover,.conv-item.active{background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.15)}
+.conv-item{border:1px solid transparent}
+.conv-avatar{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0}
+.conv-name{font-size:.88rem;font-weight:600;margin-bottom:2px}
+.conv-last{font-size:.75rem;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Chat area */
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:16px 24px;background:rgba(8,12,24,.6);backdrop-filter:blur(16px);border-bottom:1px solid var(--glass-b);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.chat-header-avatar{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0}
+.chat-partner-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700}
+.chat-partner-status{font-size:.78rem;color:var(--green);display:flex;align-items:center;gap:5px}
+.chat-partner-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green)}
+.messages-wrap{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.messages-wrap::-webkit-scrollbar{width:4px}
+.messages-wrap::-webkit-scrollbar-track{background:transparent}
+.messages-wrap::-webkit-scrollbar-thumb{background:var(--glass-b);border-radius:9999px}
+.msg{display:flex;align-items:flex-end;gap:10px;max-width:72%;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.mine{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:.75rem;font-weight:700;flex-shrink:0;font-family:'Outfit',sans-serif}
+.msg-bubble{padding:12px 16px;border-radius:18px;font-size:.875rem;line-height:1.5;word-break:break-word}
+.msg.theirs .msg-bubble{background:var(--glass);border:1px solid var(--glass-b);color:var(--t1);border-bottom-left-radius:4px}
+.msg.mine .msg-bubble{background:linear-gradient(135deg,rgba(124,92,252,.3),rgba(56,189,248,.2));border:1px solid rgba(124,92,252,.3);color:var(--t1);border-bottom-right-radius:4px}
+.msg-time{font-size:.68rem;color:var(--t3);margin-top:4px;padding:0 4px}
+.msg-wrapper{display:flex;flex-direction:column}
+.msg.mine .msg-wrapper{align-items:flex-end}
+.date-sep{text-align:center;font-size:.72rem;color:var(--t3);padding:4px 0}
+.empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--t3)}
+.empty-icon{font-size:2.5rem;opacity:.5}
+.empty-text{font-size:.9rem}
+/* Input */
+.chat-input-row{padding:16px 24px;border-top:1px solid var(--glass-b);background:rgba(8,12,24,.7);backdrop-filter:blur(16px);display:flex;gap:10px;align-items:center;flex-shrink:0}
+.msg-input{flex:1;padding:13px 18px;background:rgba(255,255,255,.05);border:1px solid var(--glass-b);border-radius:14px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:var(--tr);resize:none;max-height:100px;overflow-y:auto}
+.msg-input:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(124,92,252,.12)}
+.msg-input::placeholder{color:var(--t3)}
+.btn-send{width:46px;height:46px;background:linear-gradient(135deg,var(--v),var(--sky));border:none;border-radius:12px;display:grid;place-items:center;cursor:pointer;transition:var(--tr);flex-shrink:0}
+.btn-send:hover{opacity:.88;transform:scale(1.05)}
+.btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-send svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.no-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--t2)}
+.no-chat-icon{font-size:3rem;opacity:.4}
+.no-chat h3{font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;color:var(--t2)}
+.no-chat p{font-size:.85rem;color:var(--t3)}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,20,40,.95);border:1px solid var(--glass-b);border-radius:12px;padding:14px 24px;font-size:.875rem;color:var(--t1);z-index:9999;transition:.4s;backdrop-filter:blur(20px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:768px){.chat-sidebar{display:none}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="orb o1"></div><div class="orb o2"></div></div>
+
+<nav>
+  <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
+  <div class="nav-right">
+    <a href="find-roommates.html" class="btn-back">← Matches</a>
+    <a href="profile.html" class="btn-back">Profile</a>
+  </div>
+</nav>
+
+<div class="chat-layout">
+  <!-- Sidebar -->
+  <div class="chat-sidebar">
+    <div class="sidebar-header"><div class="sidebar-title">💬 Conversations</div></div>
+    <div class="conv-list" id="convList">
+      <div style="padding:24px 16px;text-align:center;color:var(--t3);font-size:.82rem">Start a conversation from the Find Roommates page.</div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area" id="chatArea">
+    <div class="no-chat">
+      <div class="no-chat-icon">💬</div>
+      <h3>Select a conversation</h3>
+      <p>Go to Find Roommates, click a profile, and press Connect.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null, activeChatId = null, unsubscribe = null;
+
+// Seed profiles for demo conversations
+const SEED_PROFILES = {
+  p1:{ name:'Rahul Sharma', emoji:'👨‍💻', grad:'linear-gradient(135deg,#667eea,#764ba2)' },
+  p2:{ name:'Priya Mehta', emoji:'👩‍🎓', grad:'linear-gradient(135deg,#f093fb,#f5576c)' },
+  p3:{ name:'Arjun Patel', emoji:'🎨', grad:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+  p4:{ name:'Sara Khan', emoji:'🏛️', grad:'linear-gradient(135deg,#43e97b,#38f9d7)' },
+  p5:{ name:'Dev Malhotra', emoji:'🚀', grad:'linear-gradient(135deg,#fa709a,#fee140)' },
+  p6:{ name:'Sneha Iyer', emoji:'🔬', grad:'linear-gradient(135deg,#a18cd1,#fbc2eb)' },
+  p7:{ name:'Karan Verma', emoji:'📊', grad:'linear-gradient(135deg,#ffecd2,#fcb69f)' },
+  p8:{ name:'Aisha Siddiqui', emoji:'📣', grad:'linear-gradient(135deg,#89f7fe,#66a6ff)' },
+  p9:{ name:'Rohan Gupta', emoji:'📈', grad:'linear-gradient(135deg,#d4fc79,#96e6a1)' }
+};
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  loadConversations();
+
+  // Auto-open chat if coming from profile
+  const chatWith = localStorage.getItem('chatWith');
+  const chatWithName = localStorage.getItem('chatWithName');
+  if (chatWith) {
+    localStorage.removeItem('chatWith');
+    localStorage.removeItem('chatWithName');
+    const chatId = getChatId(user.uid, chatWith);
+    const partnerInfo = SEED_PROFILES[chatWith] || { name: chatWithName || 'User', emoji: '👤', grad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
+    openChat(chatId, chatWith, partnerInfo);
+  }
+});
+
+function getChatId(uid1, uid2) {
+  return [uid1, uid2].sort().join('_');
+}
+
+async function loadConversations() {
+  const convList = document.getElementById('convList');
+  try {
+    const convSnap = await getDocs(collection(db, "users", currentUser.uid, "conversations"));
+    const convs = [];
+    convSnap.forEach(d => convs.push({ id: d.id, ...d.data() }));
+
+    if (!convs.length) {
+      convList.innerHTML = `<div style="padding:20px 16px;text-align:center;color:var(--t3);font-size:.82rem">No conversations yet.<br><br><a href="find-roommates.html" style="color:#a78bfa;text-decoration:none">Find roommates →</a></div>`;
+      return;
+    }
+
+    convList.innerHTML = convs.map(c => {
+      const p = SEED_PROFILES[c.partnerId] || { name: c.partnerName || 'User', emoji: '👤', grad:'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
+      return `<div class="conv-item" onclick="openChatById('${c.chatId}','${c.partnerId}')">
+        <div class="conv-avatar" style="background:${p.grad}">${p.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div class="conv-name">${p.name}</div>
+          <div class="conv-last">${c.lastMessage || 'Start the conversation...'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    convList.innerHTML = `<div style="padding:20px;color:var(--t3);font-size:.82rem">Could not load conversations.</div>`;
+  }
+}
+
+window.openChatById = (chatId, partnerId) => {
+  const p = SEED_PROFILES[partnerId] || { name: 'User', emoji: '👤', grad:'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
+  openChat(chatId, partnerId, p);
+};
+
+async function openChat(chatId, partnerId, partnerInfo) {
+  activeChatId = chatId;
+  if (unsubscribe) unsubscribe();
+
+  // Save conversation reference for sidebar
+  try {
+    await setDoc(doc(db, "users", currentUser.uid, "conversations", chatId), {
+      chatId, partnerId, partnerName: partnerInfo.name, lastMessage: '', updatedAt: serverTimestamp()
+    }, { merge: true });
+  } catch(e) {}
+
+  // Render chat UI
+  const initials = (currentUser.displayName || 'You').substring(0,2).toUpperCase();
+  document.getElementById('chatArea').innerHTML = `
+    <div class="chat-header">
+      <div class="chat-header-avatar" style="background:${partnerInfo.grad}">${partnerInfo.emoji}</div>
+      <div>
+        <div class="chat-partner-name">${partnerInfo.name}</div>
+        <div class="chat-partner-status">Online</div>
+      </div>
+    </div>
+    <div class="messages-wrap" id="messagesWrap">
+      <div style="text-align:center;color:var(--t3);font-size:.78rem;padding:12px 0">This is the beginning of your conversation with ${partnerInfo.name.split(' ')[0]}</div>
+    </div>
+    <div class="chat-input-row">
+      <textarea class="msg-input" id="msgInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  `;
+
+  // Highlight active conv
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+
+  // Listen to messages
+  const msgsRef = collection(db, "chats", chatId, "messages");
+  const q = query(msgsRef, orderBy("createdAt", "asc"));
+  unsubscribe = onSnapshot(q, snapshot => {
+    const wrap = document.getElementById('messagesWrap');
+    if (!wrap) return;
+    const intro = wrap.querySelector('div');
+    if (intro && snapshot.empty) return;
+
+    let lastDate = '';
+    const msgs = [];
+    snapshot.forEach(d => {
+      const data = d.data();
+      const ts = data.createdAt?.toDate();
+      const dateStr = ts ? ts.toLocaleDateString() : '';
+      if (dateStr && dateStr !== lastDate) {
+        msgs.push(`<div class="date-sep">${dateStr === new Date().toLocaleDateString() ? 'Today' : dateStr}</div>`);
+        lastDate = dateStr;
+      }
+      const isMe = data.senderId === currentUser.uid;
+      const timeStr = ts ? ts.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+      msgs.push(`
+        <div class="msg ${isMe ? 'mine' : 'theirs'}">
+          <div class="msg-avatar" style="background:${isMe ? 'linear-gradient(135deg,var(--v),var(--rose))' : partnerInfo.grad}">${isMe ? initials : partnerInfo.emoji}</div>
+          <div class="msg-wrapper">
+            <div class="msg-bubble">${escapeHtml(data.text)}</div>
+            <div class="msg-time">${timeStr}</div>
+          </div>
+        </div>`);
+    });
+
+    wrap.innerHTML = (intro ? intro.outerHTML : '') + msgs.join('');
+    wrap.scrollTop = wrap.scrollHeight;
+  });
+
+  // Update sidebar
+  loadConversations();
+  document.getElementById('msgInput')?.focus();
+}
+
+window.sendMessage = async () => {
+  const input = document.getElementById('msgInput');
+  const text = input?.value.trim();
+  if (!text || !activeChatId) return;
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  input.value = ''; input.style.height = 'auto';
+
+  try {
+    await addDoc(collection(db, "chats", activeChatId, "messages"), {
+      text, senderId: currentUser.uid,
+      senderName: currentUser.displayName || 'You',
+      createdAt: serverTimestamp()
+    });
+    // Update last message in conversation
+    const partnerInfo = {}; // known from context
+    await setDoc(doc(db, "users", currentUser.uid, "conversations", activeChatId), {
+      lastMessage: text, updatedAt: serverTimestamp()
+    }, { merge: true });
+  } catch(e) { showToast('Failed to send message', 'error'); }
+  btn.disabled = false;
+};
+
+window.handleKey = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+};
+
+window.autoResize = (el) => {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+};
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+window.showToast = (msg, type = 'success') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+</script>
+</body>
+</html>

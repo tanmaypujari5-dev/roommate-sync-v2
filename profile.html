@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roommate Profile — Roommate Sync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080c18;--glass:rgba(255,255,255,0.045);--glass-b:rgba(255,255,255,0.10);--glass-h:rgba(255,255,255,0.075);--v:#7c5cfc;--sky:#38bdf8;--rose:#f472b6;--teal:#2dd4bf;--amber:#fbbf24;--green:#4ade80;--t1:#f0f4ff;--t2:#8892aa;--t3:#4a5568;--rL:24px;--tr:0.3s cubic-bezier(0.4,0,0.2,1)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;animation:drift 20s ease-in-out infinite alternate}
+.o1{width:600px;height:600px;background:radial-gradient(circle,#7c5cfc,transparent 70%);top:-160px;left:-120px}
+.o2{width:480px;height:480px;background:radial-gradient(circle,#38bdf8,transparent 70%);top:40%;right:-100px;animation-delay:-7s}
+.o3{width:400px;height:400px;background:radial-gradient(circle,#f472b6,transparent 70%);bottom:5%;left:15%;animation-delay:-14s}
+@keyframes drift{0%{transform:translate(0,0)}100%{transform:translate(22px,-30px)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,12,24,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-b)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.2rem}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:9px;display:grid;place-items:center;font-size:.95rem}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-back{display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
+.btn-back:hover{background:var(--glass-h);color:var(--t1)}
+.nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--rose));display:grid;place-items:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;border:2px solid var(--glass-b)}
+.page{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:48px 40px 80px;display:grid;grid-template-columns:320px 1fr;gap:26px;align-items:start}
+.glass-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(18px);padding:28px;position:relative;overflow:hidden;margin-bottom:20px}
+.glass-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
+/* Left col */
+.left-col{}
+.profile-hero{text-align:center}
+.avatar-outer{display:inline-flex;align-items:center;justify-content:center;width:96px;height:96px;border-radius:26px;padding:3px;background:linear-gradient(135deg,var(--v),var(--sky));margin-bottom:18px;box-shadow:0 0 36px rgba(124,92,252,.3)}
+.avatar-inner{width:100%;height:100%;border-radius:22px;display:grid;place-items:center;font-size:2.6rem}
+.profile-name{font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#fff 0%,#c4b5fd 60%,#7dd3fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.profile-role{font-size:.88rem;color:var(--t2);margin-bottom:3px}
+.profile-loc{font-size:.8rem;color:var(--t3);margin-bottom:20px}
+/* Score */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px}
+.ring-outer{position:relative;width:110px;height:110px}
+.ring-outer svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.25,1,.5,1)}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-num{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:900;line-height:1}
+.ring-pct{font-size:.62rem;color:var(--t3)}
+.match-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:9999px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.excellent{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+.good{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.2)}
+.moderate{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+.divider{height:1px;background:var(--glass-b);margin:18px 0}
+.info-rows{}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:8px}
+.ir-left{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--t3)}
+.ir-val{font-size:.82rem;font-weight:500;color:var(--t1)}
+/* Actions */
+.actions-card{}
+.card-label{font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:14px}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--v),var(--sky));border:none;border-radius:12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,92,252,.35)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-sec{width:100%;padding:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-sec:hover{background:var(--glass-h);color:var(--t1)}
+.btn-sec.saved{color:var(--rose);border-color:rgba(244,114,182,.3)}
+/* Right col */
+.right-col{}
+.sec-header{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:18px}
+.sec-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:.9rem;flex-shrink:0}
+.bio-text{font-size:.92rem;color:var(--t2);line-height:1.75}
+.tags-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.tag{padding:4px 12px;border-radius:9999px;font-size:.73rem;font-weight:500}
+.ts{background:rgba(124,92,252,.1);color:#a78bfa;border:1px solid rgba(124,92,252,.18)}
+.tf{background:rgba(249,115,22,.1);color:#fb923c;border:1px solid rgba(249,115,22,.18)}
+.tc{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.18)}
+.tb{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.18)}
+.ls-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:4px}
+.ls-item{padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;transition:var(--tr)}
+.ls-item:hover{background:rgba(255,255,255,.055)}
+.ls-top{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.ls-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:.9rem}
+.ls-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+.ls-value{font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700}
+.match-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:.68rem;font-weight:600;margin-top:6px}
+.mt-yes{background:rgba(74,222,128,.08);color:#4ade80;border:1px solid rgba(74,222,128,.18)}
+.mt-no{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.18)}
+/* Progress bars */
+.prog-list{display:flex;flex-direction:column;gap:18px}
+.prog-item{}
+.prog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prog-label{display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--t2)}
+.prog-pct{font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700}
+.prog-track{height:7px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden}
+.prog-fill{height:100%;border-radius:9999px;width:0%;transition:width 1.3s cubic-bezier(.25,1,.5,1)}
+.chart-wrap{height:250px;position:relative;margin-top:24px}
+/* AI */
+.ai-intro{font-size:.85rem;color:var(--t3);margin-bottom:16px;line-height:1.6}
+.btn-generate{padding:11px 22px;background:linear-gradient(135deg,rgba(124,92,252,.18),rgba(56,189,248,.12));border:1px solid rgba(124,92,252,.3);border-radius:12px;color:#c4b5fd;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:8px}
+.btn-generate:hover{background:linear-gradient(135deg,rgba(124,92,252,.28),rgba(56,189,248,.2));box-shadow:0 0 18px rgba(124,92,252,.18)}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed}
+.ai-output{margin-top:16px;padding:16px;background:rgba(124,92,252,.06);border:1px solid rgba(124,92,252,.18);border-radius:14px;display:none;animation:fadeUp .35s ease}
+.ai-output.visible{display:block}
+.ai-output-head{display:flex;align-items:center;gap:7px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a78bfa;margin-bottom:10px}
+.ai-body{font-size:.875rem;color:#c4b5fd;line-height:1.7}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.spinner-sm{width:13px;height:13px;border:2px solid rgba(164,120,252,.3);border-top-color:#a78bfa;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,20,40,.95);border:1px solid var(--glass-b);border-radius:12px;padding:14px 24px;font-size:.875rem;color:var(--t1);z-index:9999;transition:.4s;backdrop-filter:blur(20px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(74,222,128,.3);color:#4ade80}
+.toast.error{border-color:rgba(248,113,113,.3);color:#f87171}
+@media(max-width:900px){.page{grid-template-columns:1fr;padding:32px 20px 60px}.ls-grid{grid-template-columns:1fr 1fr}nav{padding:14px 20px}}
+@media(max-width:600px){.ls-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grain"></div>
+
+<nav>
+  <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
+  <div class="nav-right">
+    <a href="find-roommates.html" class="btn-back">← Back to Matches</a>
+    <div class="nav-avatar" id="navAvatar">?</div>
+  </div>
+</nav>
+
+<div class="page" id="app">
+  <!-- Rendered by JS -->
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const PROFILES = [
+  { id:'p1', name:'Rahul Sharma', age:26, occupation:'Software Engineer', city:'Pune, MH', emoji:'👨‍💻', avatarGrad:'linear-gradient(135deg,#667eea,#764ba2)', bio:'SDE at a fast-growing fintech startup. I keep my space clean and love cooking on weekends. I believe a peaceful home is the foundation of good work. Looking for someone calm, respectful of shared spaces, and ideally a fellow early riser.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌅 Early Bird',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p2', name:'Priya Mehta', age:24, occupation:'MBA Student', city:'Bangalore, KA', emoji:'👩‍🎓', avatarGrad:'linear-gradient(135deg,#f093fb,#f5576c)', bio:'First-year MBA at IIM. I\'m highly organized and sociable but not loud. I prefer a clean kitchen and a drama-free living environment. My budget is on the tighter side for now, but I\'m responsible and always pay on time.', prefs:{sleep:'regular',food:'veg',clean:'average',budget:'low'}, labels:{sleep:'⏰ Standard',food:'🌿 Vegetarian',clean:'🧹 Moderate',budget:'💵 Under ₹10k'} },
+  { id:'p3', name:'Arjun Patel', age:28, occupation:'Product Designer', city:'Mumbai, MH', emoji:'🎨', avatarGrad:'linear-gradient(135deg,#4facfe,#00f2fe)', bio:'Design lead at a Series B startup. I\'m a night owl but super clean and considerate. I love good coffee, minimal interiors, and thoughtful conversations. My space reflects my aesthetic — clean lines, warm lighting, good vibes.', prefs:{sleep:'late',food:'omni',clean:'neat',budget:'high'}, labels:{sleep:'🌙 Night Owl',food:'🍗 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} },
+  { id:'p4', name:'Sara Khan', age:27, occupation:'Architect', city:'Hyderabad, TS', emoji:'🏛️', avatarGrad:'linear-gradient(135deg,#43e97b,#38f9d7)', bio:'Working on sustainable housing projects. I\'m early to bed, tidy, and vegetarian. I enjoy quiet evenings, good books, and the occasional board game. I thrive in well-organized environments and bring that energy home.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌅 Early Bird',food:'🌱 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p5', name:'Dev Malhotra', age:30, occupation:'Startup Founder', city:'Pune, MH', emoji:'🚀', avatarGrad:'linear-gradient(135deg,#fa709a,#fee140)', bio:'Building an AI startup. My schedule is unconventional but I\'m entirely self-sufficient. I respect shared spaces and am fine with any food arrangement. Looking for someone who values independence and mutual respect.', prefs:{sleep:'late',food:'omni',clean:'average',budget:'high'}, labels:{sleep:'🦉 Night Owl',food:'🍖 Non-Veg',clean:'🧹 Moderate',budget:'💎 ₹20k+'} },
+  { id:'p6', name:'Sneha Iyer', age:23, occupation:'UX Researcher', city:'Chennai, TN', emoji:'🔬', avatarGrad:'linear-gradient(135deg,#a18cd1,#fbc2eb)', bio:'Junior researcher at a health-tech company. I prefer a vegan kitchen, early mornings, and a well-organized flat. I\'m introverted but warm — love a quiet home with good natural light and plants.', prefs:{sleep:'early',food:'vegan',clean:'neat',budget:'low'}, labels:{sleep:'🌅 Early Bird',food:'🌿 Vegan',clean:'✨ Very Neat',budget:'💵 Under ₹10k'} },
+  { id:'p7', name:'Karan Verma', age:25, occupation:'Data Scientist', city:'Bangalore, KA', emoji:'📊', avatarGrad:'linear-gradient(135deg,#ffecd2,#fcb69f)', bio:'ML engineer working fully remote. I tend to work late but I\'m quiet and tidy. Happy to share cooking duties on weekends.', prefs:{sleep:'late',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌙 Night Owl',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p8', name:'Aisha Siddiqui', age:26, occupation:'Marketing Manager', city:'Delhi, DL', emoji:'📣', avatarGrad:'linear-gradient(135deg,#89f7fe,#66a6ff)', bio:'Brand manager. Social on weekends, focused during the week. I keep common areas clean and am flexible about food.', prefs:{sleep:'regular',food:'omni',clean:'average',budget:'medium'}, labels:{sleep:'⏰ Standard',food:'🍗 Non-Veg',clean:'🧹 Moderate',budget:'💰 ₹10k–₹20k'} },
+  { id:'p9', name:'Rohan Gupta', age:29, occupation:'Financial Analyst', city:'Mumbai, MH', emoji:'📈', avatarGrad:'linear-gradient(135deg,#d4fc79,#96e6a1)', bio:'Works in investment banking — long hours but impeccably organized at home. Looking for someone mature, financially responsible, and low-drama.', prefs:{sleep:'early',food:'omni',clean:'neat',budget:'high'}, labels:{sleep:'🌅 Early Bird',food:'🍖 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} }
+];
+
+let currentUser = null, userPrefs = {}, isSaved = false;
+let profileData = null;
+
+const DIM_META = {
+  sleep: { icon:'🌙', label:'Sleep Schedule', color:'linear-gradient(90deg,#7c5cfc,#a78bfa)', iconBg:'rgba(124,92,252,.12)', iconColor:'#a78bfa' },
+  food: { icon:'🍽️', label:'Food Preference', color:'linear-gradient(90deg,#f97316,#fb923c)', iconBg:'rgba(249,115,22,.12)', iconColor:'#fb923c' },
+  clean: { icon:'✨', label:'Cleanliness', color:'linear-gradient(90deg,#38bdf8,#7dd3fc)', iconBg:'rgba(56,189,248,.12)', iconColor:'#38bdf8' },
+  budget: { icon:'💰', label:'Budget Range', color:'linear-gradient(90deg,#34d399,#6ee7b7)', iconBg:'rgba(52,211,153,.12)', iconColor:'#34d399' }
+};
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  const initials = (user.displayName || user.email || 'U').substring(0,2).toUpperCase();
+  document.getElementById('navAvatar').textContent = initials;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  userPrefs = snap.exists() && snap.data().quiz ? snap.data().quiz : {
+    sleep: localStorage.getItem('sleep'), food: localStorage.getItem('food'),
+    clean: localStorage.getItem('clean'), budget: localStorage.getItem('budget')
+  };
+
+  const pid = localStorage.getItem('selectedRoommate');
+  profileData = PROFILES.find(p => p.id === pid) || PROFILES[0];
+
+  // Check if saved
+  try {
+    const savedSnap = await getDoc(doc(db, "users", user.uid, "saved", profileData.id));
+    isSaved = savedSnap.exists();
+  } catch(e) {}
+
+  renderProfile();
+});
+
+function calcScore(up, p) {
+  if (!up.sleep && !up.food && !up.clean && !up.budget) return 65;
+  let s = 0;
+  if (up.sleep === p.prefs.sleep) s += 25;
+  if (up.food === p.prefs.food) s += 25;
+  if (up.clean === p.prefs.clean) s += 25;
+  if (up.budget === p.prefs.budget) s += 25;
+  return s;
+}
+function dimScore(up, p, k) { return up[k] === p.prefs[k] ? 100 : Math.floor(Math.random()*25+35); }
+function ringColor(s) { return s >= 75 ? '#4ade80' : s >= 50 ? '#38bdf8' : '#fbbf24'; }
+function matchInfo(s) {
+  if (s >= 75) return { label:'⭐ Excellent Match', cls:'excellent' };
+  if (s >= 50) return { label:'✓ Good Match', cls:'good' };
+  return { label:'~ Moderate Match', cls:'moderate' };
+}
+
+function renderProfile() {
+  const p = profileData, up = userPrefs;
+  const score = calcScore(up, p);
+  const match = matchInfo(score);
+  const color = ringColor(score);
+  const circ = 2 * Math.PI * 50;
+  const offset = circ - (score / 100) * circ;
+  const dims = ['sleep','food','clean','budget'];
+  const dimScores = {};
+  dims.forEach(k => dimScores[k] = dimScore(up, p, k));
+
+  document.getElementById('app').innerHTML = `
+  <div class="left-col">
+    <div class="glass-card profile-hero">
+      <div class="avatar-outer"><div class="avatar-inner" style="background:${p.avatarGrad}">${p.emoji}</div></div>
+      <div class="profile-name">${p.name}</div>
+      <div class="profile-role">${p.occupation}</div>
+      <div class="profile-loc">📍 ${p.city} · ${p.age} yrs</div>
+      <div class="score-ring-wrap">
+        <div class="ring-outer">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle class="ring-bg" cx="55" cy="55" r="50"/>
+            <circle class="ring-fill" cx="55" cy="55" r="50" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="ringEl"/>
+          </svg>
+          <div class="ring-label">
+            <span class="ring-num" style="color:${color}" id="ringNum">0</span>
+            <span class="ring-pct">%</span>
+          </div>
+        </div>
+        <div class="match-badge ${match.cls}">${match.label}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="info-rows">
+        <div class="info-row"><div class="ir-left">🌙 Sleep</div><div class="ir-val">${p.labels.sleep}</div></div>
+        <div class="info-row"><div class="ir-left">🍽️ Food</div><div class="ir-val">${p.labels.food}</div></div>
+        <div class="info-row"><div class="ir-left">🧹 Clean</div><div class="ir-val">${p.labels.clean}</div></div>
+        <div class="info-row"><div class="ir-left">💰 Budget</div><div class="ir-val">${p.labels.budget}</div></div>
+      </div>
+    </div>
+    <div class="glass-card actions-card">
+      <div class="card-label">Actions</div>
+      <button class="btn-primary" id="connectBtn" onclick="connectRoommate()">💬 Connect with ${p.name.split(' ')[0]}</button>
+      <button class="btn-sec ${isSaved ? 'saved' : ''}" id="saveBtn" onclick="toggleSave()">
+        ${isSaved ? '♥ Saved' : '♡ Save Profile'}
+      </button>
+      <div class="ai-output visible" id="icebreakerOut" style="margin-top:14px">
+        <div class="ai-output-head">✦ AI Suggested Opener</div>
+        <div class="ai-body" id="icebreakerBody" style="color:var(--t3);font-style:italic">Generate an AI icebreaker message below →</div>
+      </div>
+      <button class="btn-generate" style="margin-top:10px;width:100%;justify-content:center" onclick="generateIcebreaker()">
+        <div class="spinner-sm" id="iceSpinner"></div>
+        <span id="iceText">💬 Generate Icebreaker</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="glass-card">
+      <div class="sec-header"><div class="sec-icon" style="background:rgba(124,92,252,.12);color:#a78bfa">👤</div>About ${p.name.split(' ')[0]}</div>
+      <div class="bio-text">${p.bio}</div>
+      <div class="tags-row">
+        <span class="tag ts">${p.labels.sleep}</span>
+        <span class="tag tf">${p.labels.food}</span>
+        <span class="tag tc">${p.labels.clean}</span>
+        <span class="tag tb">${p.labels.budget}</span>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="sec-header"><div class="sec-icon" style="background:rgba(56,189,248,.12);color:#38bdf8">⚡</div>Lifestyle Preferences</div>
+      <div class="ls-grid">
+        ${dims.map(k => {
+          const isMatch = up[k] && up[k] === p.prefs[k];
+          return `<div class="ls-item">
+            <div class="ls-top">
+              <div class="ls-icon" style="background:${DIM_META[k].iconBg};color:${DIM_META[k].iconColor}">${DIM_META[k].icon}</div>
+              <div><div class="ls-label">${DIM_META[k].label}</div><div class="ls-value">${p.labels[k].replace(/^[^\s]+\s/,'')}</div></div>
+            </div>
+            <span class="match-tag ${isMatch ? 'mt-yes' : 'mt-no'}">${isMatch ? '✓ Match' : '≈ Different'}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="sec-header"><div class="sec-icon" style="background:rgba(52,211,153,.12);color:#34d399">📊</div>Compatibility Breakdown</div>
+      <div class="prog-list">
+        ${dims.map(k => {
+          const pct = dimScores[k];
+          const pColor = pct >= 80 ? '#34d399' : pct >= 55 ? '#38bdf8' : '#fbbf24';
+          return `<div class="prog-item">
+            <div class="prog-top">
+              <div class="prog-label">${DIM_META[k].icon} ${DIM_META[k].label}</div>
+              <div class="prog-pct" style="color:${pColor}">${pct}%</div>
+            </div>
+            <div class="prog-track"><div class="prog-fill" data-w="${pct}" style="background:${DIM_META[k].color}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
+    </div>
+
+    <div class="glass-card">
+      <div class="sec-header"><div class="sec-icon" style="background:rgba(124,92,252,.12);color:#a78bfa">✦</div>AI Compatibility Insight</div>
+      <div class="ai-intro">Our AI will analyze your profiles and give a personalized compatibility explanation.</div>
+      <button class="btn-generate" id="genInsightBtn" onclick="generateInsight()">
+        <div class="spinner-sm" id="insightSpinner"></div>
+        <span id="insightText">✦ Generate Insight</span>
+      </button>
+      <div class="ai-output" id="insightOut">
+        <div class="ai-output-head"><div class="spinner-sm" id="insightSpin2"></div>✦ AI Analysis</div>
+        <div class="ai-body" id="insightBody"></div>
+      </div>
+    </div>
+  </div>`;
+
+  // Animate ring
+  setTimeout(() => {
+    document.getElementById('ringEl').style.strokeDashoffset = offset;
+    let c = 0; const step = Math.ceil(score/40);
+    const iv = setInterval(() => {
+      c = Math.min(c + step, score);
+      document.getElementById('ringNum').textContent = c;
+      if (c >= score) clearInterval(iv);
+    }, 28);
+    setTimeout(() => document.querySelectorAll('.prog-fill').forEach(b => b.style.width = b.dataset.w + '%'), 200);
+  }, 300);
+
+  // Radar chart
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,250);
+  grad.addColorStop(0,'rgba(124,92,252,0.4)');
+  grad.addColorStop(1,'rgba(56,189,248,0.1)');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['Sleep','Food','Cleanliness','Budget'],
+      datasets: [{ data: [dimScores.sleep,dimScores.food,dimScores.clean,dimScores.budget], backgroundColor: grad, borderColor: 'rgba(124,92,252,0.8)', pointBackgroundColor: '#38bdf8', pointBorderColor: '#fff', borderWidth: 2 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ angleLines:{color:'rgba(255,255,255,0.08)'}, grid:{color:'rgba(255,255,255,0.08)'}, pointLabels:{color:'#8892aa',font:{family:"'DM Sans'",size:12}}, ticks:{display:false} } },
+      plugins:{legend:{display:false}}
+    }
+  });
+
+  window._profile = p;
+  window._userPrefs = up;
+}
+
+window.connectRoommate = () => {
+  const pid = profileData.id;
+  localStorage.setItem('chatWith', pid);
+  localStorage.setItem('chatWithName', profileData.name);
+  window.location.href = 'chat.html';
+};
+
+window.toggleSave = async () => {
+  const btn = document.getElementById('saveBtn');
+  try {
+    if (isSaved) {
+      await deleteDoc(doc(db, "users", currentUser.uid, "saved", profileData.id));
+      isSaved = false; btn.textContent = '♡ Save Profile'; btn.classList.remove('saved');
+      showToast('Profile removed from saved');
+    } else {
+      await setDoc(doc(db, "users", currentUser.uid, "saved", profileData.id), { savedAt: new Date(), name: profileData.name });
+      isSaved = true; btn.textContent = '♥ Saved'; btn.classList.add('saved');
+      showToast('Profile saved! ♥', 'success');
+    }
+  } catch(e) { showToast('Could not save. Try again.', 'error'); }
+};
+
+async function callAI(prompt) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 250, messages: [{ role: "user", content: prompt }] })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text;
+}
+
+function typeText(el, text) {
+  el.textContent = '';
+  let i = 0;
+  const iv = setInterval(() => { el.textContent += text[i++]; if (i >= text.length) clearInterval(iv); }, 16);
+}
+
+window.generateInsight = async () => {
+  const btn = document.getElementById('genInsightBtn');
+  const spinner = document.getElementById('insightSpinner');
+  const text = document.getElementById('insightText');
+  const out = document.getElementById('insightOut');
+  const body = document.getElementById('insightBody');
+  btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Analyzing...';
+  out.classList.add('visible'); body.textContent = 'Generating...';
+
+  const p = window._profile, up = window._userPrefs;
+  const prompt = `As a roommate compatibility expert, analyze if these two people would be good roommates in 60-70 words. Be specific and helpful.
+
+Person 1 (the user): sleep=${up.sleep || 'unknown'}, food=${up.food || 'unknown'}, cleanliness=${up.clean || 'unknown'}, budget=${up.budget || 'unknown'}
+
+Person 2 (${p.name}): sleep=${p.prefs.sleep}, food=${p.prefs.food}, cleanliness=${p.prefs.clean}, budget=${p.prefs.budget}
+
+Start with "${p.name.split(' ')[0]} and you would..."`;
+
+  try {
+    const result = await callAI(prompt);
+    typeText(body, result || getFallbackInsight(p, up));
+  } catch(e) { typeText(body, getFallbackInsight(p, up)); }
+  btn.disabled = false; spinner.style.display = 'none'; text.textContent = '✦ Regenerate';
+};
+
+window.generateIcebreaker = async () => {
+  const btn = document.querySelector('[onclick="generateIcebreaker()"]');
+  const spinner = document.getElementById('iceSpinner');
+  const text = document.getElementById('iceText');
+  const body = document.getElementById('icebreakerBody');
+  btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Writing...';
+
+  const p = window._profile, up = window._userPrefs;
+  const prompt = `Write a friendly, natural first message to send to a potential roommate named ${p.name.split(' ')[0]}. Keep it under 40 words. Mention one lifestyle similarity between you both. User: sleep=${up.sleep}, food=${up.food}. ${p.name.split(' ')[0]}: sleep=${p.prefs.sleep}, food=${p.prefs.food}. Don't mention the app by name.`;
+
+  try {
+    const result = await callAI(prompt);
+    typeText(body, result || `Hey ${p.name.split(' ')[0]}! I came across your profile and we seem to have similar lifestyles — especially with our ${up.sleep === p.prefs.sleep ? 'sleep schedules' : 'general preferences'}. Would love to chat about potentially sharing a flat! 😊`);
+  } catch(e) {
+    body.textContent = `Hey ${p.name.split(' ')[0]}! Your profile really caught my eye — we seem like a great potential match. Would love to connect and discuss!`;
+  }
+  btn.disabled = false; spinner.style.display = 'none'; text.textContent = '💬 Regenerate Message';
+};
+
+function getFallbackInsight(p, up) {
+  const matches = ['sleep','food','clean','budget'].filter(k => up[k] === p.prefs[k]);
+  if (matches.length >= 3) return `${p.name.split(' ')[0]} and you would make excellent roommates! You share ${matches.join(', ')} — the three strongest predictors of long-term roommate satisfaction. Conflicts are unlikely given your very aligned lifestyles.`;
+  if (matches.length >= 1) return `${p.name.split(' ')[0]} and you align on ${matches.join(' and ')}. The differences in other areas are manageable with clear communication about expectations upfront.`;
+  return `${p.name.split(' ')[0]} and you have quite different lifestyles, but that doesn't mean it can't work! Clear house rules and mutual respect could bridge the gaps. Consider a trial period.`;
+}
+
+window.showToast = (msg, type = 'success') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+</script>
+</body>
+</html>

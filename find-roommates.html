@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Roommates — Roommate Sync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080c18;--bg2:#0d1426;--glass:rgba(255,255,255,0.045);--glass-b:rgba(255,255,255,0.10);--glass-h:rgba(255,255,255,0.075);--v:#7c5cfc;--sky:#38bdf8;--rose:#f472b6;--teal:#2dd4bf;--amber:#fbbf24;--green:#4ade80;--t1:#f0f4ff;--t2:#8892aa;--t3:#4a5568;--rL:24px;--tr:0.3s cubic-bezier(0.4,0,0.2,1)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;animation:drift 18s ease-in-out infinite alternate}
+.o1{width:560px;height:560px;background:radial-gradient(circle,#7c5cfc,transparent 70%);top:-120px;left:-100px}
+.o2{width:440px;height:440px;background:radial-gradient(circle,#38bdf8,transparent 70%);bottom:0;right:-80px;animation-delay:-7s}
+.o3{width:350px;height:350px;background:radial-gradient(circle,#f472b6,transparent 70%);top:40%;left:30%;animation-delay:-14s}
+@keyframes drift{0%{transform:translate(0,0)}100%{transform:translate(20px,-30px)}}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,12,24,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-b)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.2rem}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:9px;display:grid;place-items:center;font-size:.95rem}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-outline{padding:8px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
+.btn-outline:hover{background:var(--glass-h);color:var(--t1)}
+.nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--rose));display:grid;place-items:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;border:2px solid var(--glass-b);cursor:pointer}
+.page-wrapper{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 40px 80px;width:100%}
+/* Hero */
+.hero{text-align:center;padding:48px 0 36px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.3);border-radius:9999px;font-size:.78rem;font-weight:600;color:#a78bfa;margin-bottom:20px;text-transform:uppercase;letter-spacing:.06em}
+.hero h1{font-family:'Outfit',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-.04em;margin-bottom:14px}
+.grad{background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#7dd3fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--t2);font-size:1rem;max-width:500px;margin:0 auto 24px}
+.stats-row{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.stat-chip{display:flex;align-items:center;gap:8px;padding:8px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9999px;font-size:.85rem;color:var(--t2)}
+.stat-chip strong{color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700}
+.stat-dot{width:7px;height:7px;border-radius:50%}
+/* Filters */
+.filter-box{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);padding:22px 28px;margin-bottom:24px;backdrop-filter:blur(16px)}
+.filter-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.filter-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
+.btn-reset{padding:6px 14px;background:none;border:1px solid var(--glass-b);border-radius:8px;color:var(--t3);font-size:.78rem;cursor:pointer;transition:var(--tr)}
+.btn-reset:hover{color:var(--t1);border-color:rgba(255,255,255,.2)}
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.fg label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:7px}
+.fsel{width:100%;padding:10px 32px 10px 14px;background:rgba(255,255,255,.04);border:1px solid var(--glass-b);border-radius:10px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.875rem;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:var(--tr)}
+.fsel:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(124,92,252,.12)}
+.fsel option{background:var(--bg2)}
+/* Results meta */
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.results-count{font-size:.9rem;color:var(--t2)}
+.results-count strong{color:var(--t1);font-family:'Outfit',sans-serif}
+.sort-row{display:flex;align-items:center;gap:10px}
+.sort-label{font-size:.8rem;color:var(--t3)}
+.sort-sel{padding:7px 28px 7px 12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238892aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.sort-sel option{background:var(--bg2)}
+/* Cards */
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.roommate-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);padding:26px;backdrop-filter:blur(16px);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s ease,border-color .35s ease;position:relative;overflow:hidden;animation:cardIn .4s ease both}
+.roommate-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.roommate-card:hover{transform:translateY(-6px) scale(1.005);box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 30px rgba(124,92,252,.12);border-color:rgba(124,92,252,.25)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.card-profile{display:flex;align-items:center;gap:12px}
+.avatar-wrap{position:relative}
+.avatar{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;flex-shrink:0}
+.online-dot{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+.card-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:2px}
+.card-meta{font-size:.78rem;color:var(--t2)}
+/* Score ring (small) */
+.score-sm{position:relative;width:56px;height:56px;flex-shrink:0}
+.score-sm svg{transform:rotate(-90deg)}
+.score-sm-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:4}
+.score-sm-fill{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:157;stroke-dashoffset:157;transition:stroke-dashoffset 1.2s cubic-bezier(.25,1,.5,1)}
+.score-sm-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:800;line-height:1}
+.score-sm-pct{font-size:.5rem;color:var(--t3);letter-spacing:.04em}
+.match-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:9999px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+.match-badge.excellent{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+.match-badge.good{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.2)}
+.match-badge.moderate{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+.card-bio{font-size:.82rem;color:var(--t2);line-height:1.6;margin-bottom:16px}
+.tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.tag{padding:3px 11px;border-radius:9999px;font-size:.72rem;font-weight:500;display:flex;align-items:center;gap:4px}
+.ts{background:rgba(124,92,252,.1);color:#a78bfa;border:1px solid rgba(124,92,252,.18)}
+.tf{background:rgba(249,115,22,.1);color:#fb923c;border:1px solid rgba(249,115,22,.18)}
+.tc{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.18)}
+.tb{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.18)}
+.card-actions{display:flex;gap:9px}
+.btn-insight{flex:1;padding:10px;background:linear-gradient(135deg,var(--v),var(--sky));border:none;border-radius:11px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-insight:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,92,252,.3)}
+.btn-insight:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-save{padding:10px 13px;background:var(--glass);border:1px solid var(--glass-b);border-radius:11px;color:var(--t2);font-size:1rem;cursor:pointer;transition:var(--tr)}
+.btn-save:hover{background:var(--glass-h);color:var(--t1)}
+.btn-save.saved{color:var(--rose);border-color:rgba(244,114,182,.3)}
+.btn-view{padding:10px 14px;background:var(--glass);border:1px solid var(--glass-b);border-radius:11px;color:var(--t2);font-size:.82rem;font-weight:600;cursor:pointer;transition:var(--tr)}
+.btn-view:hover{background:var(--glass-h);color:var(--t1)}
+.insight-panel{margin-top:14px;padding:14px;background:rgba(124,92,252,.07);border:1px solid rgba(124,92,252,.2);border-radius:12px;font-size:.82rem;color:#c4b5fd;line-height:1.65;display:none;animation:slideDown .3s ease}
+.insight-panel.visible{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.empty-state{grid-column:1/-1;text-align:center;padding:80px 40px;color:var(--t2)}
+.empty-icon{font-size:3.5rem;margin-bottom:16px;opacity:.5}
+.spinner-sm{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(15,20,40,.95);border:1px solid var(--glass-b);border-radius:12px;padding:14px 24px;font-size:.875rem;color:var(--t1);z-index:9999;transition:.4s;backdrop-filter:blur(20px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(74,222,128,.3);color:#4ade80}
+.toast.error{border-color:rgba(248,113,113,.3);color:#f87171}
+@media(max-width:1100px){.cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.cards-grid{grid-template-columns:1fr}.filter-grid{grid-template-columns:repeat(2,1fr)}nav{padding:16px 20px}.page-wrapper{padding:0 20px 60px}.hero{padding:32px 0 24px}}
+@media(max-width:480px){.filter-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg-canvas"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grain"></div>
+
+<nav>
+  <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
+  <div class="nav-right">
+    <a href="result.html" class="btn-outline">← My Results</a>
+    <div class="nav-avatar" id="navAvatar">?</div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+  <div class="hero">
+    <div class="hero-badge">✦ AI-Powered Matching</div>
+    <h1>Compatible Roommates <span class="grad">Near You</span></h1>
+    <p>Based on your lifestyle analysis, we found these high-compatibility matches.</p>
+    <div class="stats-row">
+      <div class="stat-chip"><div class="stat-dot" style="background:var(--green)"></div><strong id="statMatches">–</strong>&nbsp;matches found</div>
+      <div class="stat-chip"><div class="stat-dot" style="background:var(--v)"></div><strong id="statAvg">–</strong>&nbsp;avg compatibility</div>
+      <div class="stat-chip"><div class="stat-dot" style="background:var(--sky)"></div>Updated live</div>
+    </div>
+  </div>
+
+  <div class="filter-box">
+    <div class="filter-top">
+      <span class="filter-title">⊞ Filter Roommates</span>
+      <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    </div>
+    <div class="filter-grid">
+      <div class="fg"><label>Budget Range</label>
+        <select class="fsel" id="fBudget" onchange="applyFilters()">
+          <option value="">All Budgets</option>
+          <option value="low">Under ₹10k/mo</option>
+          <option value="medium">₹10k–₹20k/mo</option>
+          <option value="high">₹20k+/mo</option>
+        </select></div>
+      <div class="fg"><label>Sleep Schedule</label>
+        <select class="fsel" id="fSleep" onchange="applyFilters()">
+          <option value="">Any Schedule</option>
+          <option value="early">Early Bird</option>
+          <option value="regular">Standard</option>
+          <option value="late">Night Owl</option>
+        </select></div>
+      <div class="fg"><label>Food Preference</label>
+        <select class="fsel" id="fFood" onchange="applyFilters()">
+          <option value="">Any Food</option>
+          <option value="veg">Vegetarian</option>
+          <option value="omni">Non-Vegetarian</option>
+          <option value="vegan">Vegan</option>
+        </select></div>
+      <div class="fg"><label>Cleanliness</label>
+        <select class="fsel" id="fClean" onchange="applyFilters()">
+          <option value="">Any Level</option>
+          <option value="neat">Very Neat</option>
+          <option value="average">Moderate</option>
+          <option value="messy">Relaxed</option>
+        </select></div>
+    </div>
+  </div>
+
+  <div class="results-meta">
+    <div class="results-count">Showing <strong id="resultCount">0</strong> profiles</div>
+    <div class="sort-row">
+      <span class="sort-label">Sort by</span>
+      <select class="sort-sel" id="sortSel" onchange="applyFilters()">
+        <option value="score">Compatibility</option>
+        <option value="name">Name A–Z</option>
+        <option value="age">Age</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null, userPrefs = {}, allProfiles = [], savedIds = new Set();
+
+// Static seed profiles (appear for all users as demo profiles)
+const SEED_PROFILES = [
+  { id:'p1', name:'Rahul Sharma', age:26, occupation:'Software Engineer', city:'Pune, MH', emoji:'👨‍💻', avatarGrad:'linear-gradient(135deg,#667eea,#764ba2)', bio:'SDE at a fintech startup. I keep my space clean and love cooking on weekends. Looking for someone calm and respectful of shared spaces.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, tags:{sleep:'🌅 Early Bird',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p2', name:'Priya Mehta', age:24, occupation:'MBA Student', city:'Bangalore, KA', emoji:'👩‍🎓', avatarGrad:'linear-gradient(135deg,#f093fb,#f5576c)', bio:'First-year MBA at IIM. Organized and sociable but not loud. My budget is tight but I always pay on time.', prefs:{sleep:'regular',food:'veg',clean:'average',budget:'low'}, tags:{sleep:'⏰ Standard',food:'🌿 Vegetarian',clean:'🧹 Moderate',budget:'💵 Under ₹10k'} },
+  { id:'p3', name:'Arjun Patel', age:28, occupation:'Product Designer', city:'Mumbai, MH', emoji:'🎨', avatarGrad:'linear-gradient(135deg,#4facfe,#00f2fe)', bio:'Design lead at a Series B startup. Night owl but super clean. Love good coffee, minimal interiors, and thoughtful conversations.', prefs:{sleep:'late',food:'omni',clean:'neat',budget:'high'}, tags:{sleep:'🌙 Night Owl',food:'🍗 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} },
+  { id:'p4', name:'Sara Khan', age:27, occupation:'Architect', city:'Hyderabad, TS', emoji:'🏛️', avatarGrad:'linear-gradient(135deg,#43e97b,#38f9d7)', bio:'Working on sustainable housing projects. Early to bed, tidy, and vegetarian. I enjoy quiet evenings and good books.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, tags:{sleep:'🌅 Early Bird',food:'🌱 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p5', name:'Dev Malhotra', age:30, occupation:'Startup Founder', city:'Pune, MH', emoji:'🚀', avatarGrad:'linear-gradient(135deg,#fa709a,#fee140)', bio:'Building an AI startup. Schedule is chaotic but I\'m self-sufficient. Looking for someone who values independence and mutual respect.', prefs:{sleep:'late',food:'omni',clean:'average',budget:'high'}, tags:{sleep:'🦉 Night Owl',food:'🍖 Non-Veg',clean:'🧹 Moderate',budget:'💎 ₹20k+'} },
+  { id:'p6', name:'Sneha Iyer', age:23, occupation:'UX Researcher', city:'Chennai, TN', emoji:'🔬', avatarGrad:'linear-gradient(135deg,#a18cd1,#fbc2eb)', bio:'Junior researcher at a health-tech company. Prefer a vegan kitchen, early mornings, and a well-organized flat.', prefs:{sleep:'early',food:'vegan',clean:'neat',budget:'low'}, tags:{sleep:'🌅 Early Bird',food:'🌿 Vegan',clean:'✨ Very Neat',budget:'💵 Under ₹10k'} },
+  { id:'p7', name:'Karan Verma', age:25, occupation:'Data Scientist', city:'Bangalore, KA', emoji:'📊', avatarGrad:'linear-gradient(135deg,#ffecd2,#fcb69f)', bio:'ML engineer working remotely. Tend to work late but quiet and tidy. Happy to share cooking duties on weekends.', prefs:{sleep:'late',food:'veg',clean:'neat',budget:'medium'}, tags:{sleep:'🌙 Night Owl',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p8', name:'Aisha Siddiqui', age:26, occupation:'Marketing Manager', city:'Delhi, DL', emoji:'📣', avatarGrad:'linear-gradient(135deg,#89f7fe,#66a6ff)', bio:'Brand manager. Social on weekends, focused on weekdays. Flexible with food and keep common areas clean.', prefs:{sleep:'regular',food:'omni',clean:'average',budget:'medium'}, tags:{sleep:'⏰ Standard',food:'🍗 Non-Veg',clean:'🧹 Moderate',budget:'💰 ₹10k–₹20k'} },
+  { id:'p9', name:'Rohan Gupta', age:29, occupation:'Financial Analyst', city:'Mumbai, MH', emoji:'📈', avatarGrad:'linear-gradient(135deg,#d4fc79,#96e6a1)', bio:'Works in investment banking. Long hours but impeccably organized. Looking for someone mature and financially stable.', prefs:{sleep:'early',food:'omni',clean:'neat',budget:'high'}, tags:{sleep:'🌅 Early Bird',food:'🍖 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} }
+];
+
+function calcScore(up, profile) {
+  if (!up.sleep && !up.food && !up.clean && !up.budget) return Math.floor(Math.random()*30+60);
+  let s = 0;
+  if (up.sleep === profile.prefs.sleep) s += 25;
+  if (up.food === profile.prefs.food) s += 25;
+  if (up.clean === profile.prefs.clean) s += 25;
+  if (up.budget === profile.prefs.budget) s += 25;
+  return s;
+}
+
+function ringColor(s) { return s >= 75 ? '#4ade80' : s >= 50 ? '#38bdf8' : '#fbbf24'; }
+function matchCls(s) { return s >= 75 ? 'excellent' : s >= 50 ? 'good' : 'moderate'; }
+function matchLabel(s) { return s >= 75 ? '⭐ Excellent Match' : s >= 50 ? '✓ Good Match' : '~ Moderate Match'; }
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  const initials = (user.displayName || user.email || 'U').substring(0,2).toUpperCase();
+  document.getElementById('navAvatar').textContent = initials;
+
+  // Load user prefs
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (snap.exists() && snap.data().quiz) {
+    userPrefs = snap.data().quiz;
+  } else {
+    userPrefs = { sleep: localStorage.getItem('sleep'), food: localStorage.getItem('food'), clean: localStorage.getItem('clean'), budget: localStorage.getItem('budget') };
+  }
+
+  // Load saved profiles
+  try {
+    const savedSnap = await getDocs(collection(db, "users", user.uid, "saved"));
+    savedSnap.forEach(d => savedIds.add(d.id));
+  } catch(e) {}
+
+  // Combine seed + any real users (excluding self)
+  allProfiles = [...SEED_PROFILES];
+  // Load real user profiles from Firestore
+  try {
+    const usersSnap = await getDocs(collection(db, "users"));
+    usersSnap.forEach(d => {
+      const data = d.data();
+      if (d.id !== user.uid && data.quizCompleted && data.quiz) {
+        allProfiles.push({
+          id: d.id, name: data.name || 'User', age: data.age || 22,
+          occupation: data.occupation || 'Professional', city: data.city || 'India',
+          emoji: '👤', avatarGrad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)',
+          bio: data.bio || 'Roommate Sync user looking for a compatible roommate.',
+          prefs: data.quiz,
+          tags: {
+            sleep: data.quiz.sleep === 'early' ? '🌅 Early Bird' : data.quiz.sleep === 'late' ? '🌙 Night Owl' : '⏰ Standard',
+            food: data.quiz.food === 'veg' ? '🥗 Vegetarian' : data.quiz.food === 'vegan' ? '🌿 Vegan' : '🍗 Non-Veg',
+            clean: data.quiz.clean === 'neat' ? '✨ Very Neat' : data.quiz.clean === 'average' ? '🧹 Moderate' : '🎨 Relaxed',
+            budget: data.quiz.budget === 'low' ? '💵 Under ₹10k' : data.quiz.budget === 'high' ? '💎 ₹20k+' : '💰 ₹10k–₹20k'
+          }
+        });
+      }
+    });
+  } catch(e) {}
+
+  applyFilters();
+});
+
+window.applyFilters = () => {
+  const fb = document.getElementById('fBudget').value;
+  const fs = document.getElementById('fSleep').value;
+  const ff = document.getElementById('fFood').value;
+  const fc = document.getElementById('fClean').value;
+  const sort = document.getElementById('sortSel').value;
+
+  let filtered = allProfiles.filter(p => {
+    if (fb && p.prefs.budget !== fb) return false;
+    if (fs && p.prefs.sleep !== fs) return false;
+    if (ff && p.prefs.food !== ff) return false;
+    if (fc && p.prefs.clean !== fc) return false;
+    return true;
+  });
+
+  filtered = filtered.map(p => ({ ...p, score: calcScore(userPrefs, p) }));
+
+  if (sort === 'score') filtered.sort((a,b) => b.score - a.score);
+  else if (sort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  else if (sort === 'age') filtered.sort((a,b) => a.age - b.age);
+
+  document.getElementById('resultCount').textContent = filtered.length;
+  document.getElementById('statMatches').textContent = filtered.length;
+  if (filtered.length) {
+    const avg = Math.round(filtered.reduce((s,p) => s + p.score, 0) / filtered.length);
+    document.getElementById('statAvg').textContent = avg + '%';
+  }
+
+  renderCards(filtered);
+};
+
+window.resetFilters = () => {
+  ['fBudget','fSleep','fFood','fClean'].forEach(id => document.getElementById(id).value = '');
+  applyFilters();
+};
+
+function renderCards(profiles) {
+  const grid = document.getElementById('cardsGrid');
+  if (!profiles.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3 style="font-family:'Outfit',sans-serif;color:var(--t2);margin-bottom:8px">No matches found</h3><p>Try adjusting your filters</p></div>`;
+    return;
+  }
+  grid.innerHTML = profiles.map((p, i) => {
+    const circ = 157; const offset = circ - (p.score / 100) * circ;
+    const color = ringColor(p.score);
+    const saved = savedIds.has(p.id);
+    return `
+    <div class="roommate-card" style="animation-delay:${i * 0.06}s">
+      <div class="card-top">
+        <div class="card-profile">
+          <div class="avatar-wrap">
+            <div class="avatar" style="background:${p.avatarGrad}">${p.emoji}</div>
+            <div class="online-dot"></div>
+          </div>
+          <div>
+            <div class="card-name">${p.name}</div>
+            <div class="card-meta">${p.occupation} · ${p.city}</div>
+          </div>
+        </div>
+        <div class="score-sm">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle class="score-sm-bg" cx="28" cy="28" r="25"/>
+            <circle class="score-sm-fill" cx="28" cy="28" r="25" stroke="${color}" data-offset="${offset}"/>
+          </svg>
+          <div class="score-sm-label"><span style="color:${color}">${p.score}</span><span class="score-sm-pct">%</span></div>
+        </div>
+      </div>
+      <div class="match-badge ${matchCls(p.score)}">${matchLabel(p.score)}</div>
+      <div class="card-bio">${p.bio}</div>
+      <div class="tags-row">
+        <span class="tag ts">${p.tags.sleep}</span>
+        <span class="tag tf">${p.tags.food}</span>
+        <span class="tag tc">${p.tags.clean}</span>
+        <span class="tag tb">${p.tags.budget}</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn-insight" onclick="getInsight('${p.id}', this)" data-pid="${p.id}">
+          <div class="spinner-sm"></div>✦ AI Insight
+        </button>
+        <button class="btn-view" onclick="viewProfile('${p.id}')">View →</button>
+        <button class="btn-save ${saved ? 'saved' : ''}" onclick="toggleSave('${p.id}', this)" title="${saved ? 'Unsave' : 'Save'}">
+          ${saved ? '♥' : '♡'}
+        </button>
+      </div>
+      <div class="insight-panel" id="insight-${p.id}"></div>
+    </div>`;
+  }).join('');
+
+  // Animate rings
+  setTimeout(() => {
+    document.querySelectorAll('.score-sm-fill').forEach(el => {
+      el.style.strokeDashoffset = el.dataset.offset;
+    });
+  }, 300);
+}
+
+window.viewProfile = (pid) => {
+  localStorage.setItem('selectedRoommate', pid);
+  window.location.href = 'profile.html';
+};
+
+window.getInsight = async (pid, btn) => {
+  const panel = document.getElementById('insight-' + pid);
+  if (panel.classList.contains('visible')) { panel.classList.remove('visible'); return; }
+  const spinner = btn.querySelector('.spinner-sm');
+  btn.disabled = true; spinner.style.display = 'block';
+  panel.classList.add('visible');
+  panel.textContent = 'Generating AI insight...';
+
+  const profile = allProfiles.find(p => p.id === pid);
+  const up = userPrefs;
+  const prompt = `In 2 sentences, explain if this person would be a good roommate match and the main compatibility factor. User's lifestyle: sleep=${up.sleep}, food=${up.food}, clean=${up.clean}, budget=${up.budget}. Profile's lifestyle: sleep=${profile.prefs.sleep}, food=${profile.prefs.food}, clean=${profile.prefs.clean}, budget=${profile.prefs.budget}. Person's name: ${profile.name}. Be concise and specific.`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 150, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await res.json();
+    panel.textContent = data.content?.[0]?.text || fallbackInsight(profile, up);
+  } catch(e) {
+    panel.textContent = fallbackInsight(profile, up);
+  }
+  btn.disabled = false; spinner.style.display = 'none';
+};
+
+function fallbackInsight(p, up) {
+  const matches = ['sleep','food','clean','budget'].filter(k => up[k] === p.prefs[k]);
+  if (matches.length >= 3) return `${p.name} is an excellent match! You align on ${matches.join(', ')} — the top predictors of roommate harmony.`;
+  if (matches.length >= 1) return `${p.name} aligns with you on ${matches.join(' and ')}. Minor differences in other areas are manageable with clear communication.`;
+  return `${p.name} has a different lifestyle profile. Compatibility is possible with clear house rules and open communication.`;
+}
+
+window.toggleSave = async (pid, btn) => {
+  if (!currentUser) return;
+  const saved = savedIds.has(pid);
+  try {
+    if (saved) {
+      await deleteDoc(doc(db, "users", currentUser.uid, "saved", pid));
+      savedIds.delete(pid);
+      btn.textContent = '♡'; btn.classList.remove('saved');
+      showToast('Profile removed from saved', 'success');
+    } else {
+      await setDoc(doc(db, "users", currentUser.uid, "saved", pid), { savedAt: new Date() });
+      savedIds.add(pid);
+      btn.textContent = '♥'; btn.classList.add('saved');
+      showToast('Profile saved! ♥', 'success');
+    }
+  } catch(e) { showToast('Could not save. Try again.', 'error'); }
+};
+
+window.showToast = (msg, type = 'success') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+</script>
+</body>
+</html>
