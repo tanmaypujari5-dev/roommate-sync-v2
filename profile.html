@@ -24,19 +24,18 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .nav-right{display:flex;align-items:center;gap:12px}
 .btn-back{display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
 .btn-back:hover{background:var(--glass-h);color:var(--t1)}
+.btn-logout{padding:8px 18px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:#f87171;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--tr)}
+.btn-logout:hover{background:rgba(248,113,113,.15);color:#fca5a5}
 .nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--rose));display:grid;place-items:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;border:2px solid var(--glass-b)}
 .page{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:48px 40px 80px;display:grid;grid-template-columns:320px 1fr;gap:26px;align-items:start}
 .glass-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(18px);padding:28px;position:relative;overflow:hidden;margin-bottom:20px}
 .glass-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
-/* Left col */
-.left-col{}
 .profile-hero{text-align:center}
 .avatar-outer{display:inline-flex;align-items:center;justify-content:center;width:96px;height:96px;border-radius:26px;padding:3px;background:linear-gradient(135deg,var(--v),var(--sky));margin-bottom:18px;box-shadow:0 0 36px rgba(124,92,252,.3)}
 .avatar-inner{width:100%;height:100%;border-radius:22px;display:grid;place-items:center;font-size:2.6rem}
 .profile-name{font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#fff 0%,#c4b5fd 60%,#7dd3fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
 .profile-role{font-size:.88rem;color:var(--t2);margin-bottom:3px}
 .profile-loc{font-size:.8rem;color:var(--t3);margin-bottom:20px}
-/* Score */
 .score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px}
 .ring-outer{position:relative;width:110px;height:110px}
 .ring-outer svg{transform:rotate(-90deg)}
@@ -50,12 +49,9 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .good{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.2)}
 .moderate{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
 .divider{height:1px;background:var(--glass-b);margin:18px 0}
-.info-rows{}
 .info-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:8px}
 .ir-left{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--t3)}
 .ir-val{font-size:.82rem;font-weight:500;color:var(--t1)}
-/* Actions */
-.actions-card{}
 .card-label{font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:14px}
 .btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--v),var(--sky));border:none;border-radius:12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
 .btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,92,252,.35)}
@@ -63,8 +59,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .btn-sec{width:100%;padding:12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:12px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-sec:hover{background:var(--glass-h);color:var(--t1)}
 .btn-sec.saved{color:var(--rose);border-color:rgba(244,114,182,.3)}
-/* Right col */
-.right-col{}
 .sec-header{display:flex;align-items:center;gap:10px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:18px}
 .sec-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:.9rem;flex-shrink:0}
 .bio-text{font-size:.92rem;color:var(--t2);line-height:1.75}
@@ -84,16 +78,13 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .match-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:.68rem;font-weight:600;margin-top:6px}
 .mt-yes{background:rgba(74,222,128,.08);color:#4ade80;border:1px solid rgba(74,222,128,.18)}
 .mt-no{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.18)}
-/* Progress bars */
 .prog-list{display:flex;flex-direction:column;gap:18px}
-.prog-item{}
 .prog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .prog-label{display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--t2)}
 .prog-pct{font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700}
 .prog-track{height:7px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden}
 .prog-fill{height:100%;border-radius:9999px;width:0%;transition:width 1.3s cubic-bezier(.25,1,.5,1)}
 .chart-wrap{height:250px;position:relative;margin-top:24px}
-/* AI */
 .ai-intro{font-size:.85rem;color:var(--t3);margin-bottom:16px;line-height:1.6}
 .btn-generate{padding:11px 22px;background:linear-gradient(135deg,rgba(124,92,252,.18),rgba(56,189,248,.12));border:1px solid rgba(124,92,252,.3);border-radius:12px;color:#c4b5fd;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:8px}
 .btn-generate:hover{background:linear-gradient(135deg,rgba(124,92,252,.28),rgba(56,189,248,.2));box-shadow:0 0 18px rgba(124,92,252,.18)}
@@ -121,22 +112,21 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
   <div class="nav-right">
     <a href="find-roommates.html" class="btn-back">← Back to Matches</a>
+    <!-- ✅ ADDED: Logout button -->
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     <div class="nav-avatar" id="navAvatar">?</div>
   </div>
 </nav>
 
-<div class="page" id="app">
-  <!-- Rendered by JS -->
-</div>
-
+<div class="page" id="app"></div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+// ✅ FIXED: Your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
   authDomain: "roommate-sync-7406b.firebaseapp.com",
@@ -150,26 +140,31 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ✅ ADDED: Logout function
+window.doLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
 const PROFILES = [
   { id:'p1', name:'Rahul Sharma', age:26, occupation:'Software Engineer', city:'Pune, MH', emoji:'👨‍💻', avatarGrad:'linear-gradient(135deg,#667eea,#764ba2)', bio:'SDE at a fast-growing fintech startup. I keep my space clean and love cooking on weekends. I believe a peaceful home is the foundation of good work. Looking for someone calm, respectful of shared spaces, and ideally a fellow early riser.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌅 Early Bird',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
   { id:'p2', name:'Priya Mehta', age:24, occupation:'MBA Student', city:'Bangalore, KA', emoji:'👩‍🎓', avatarGrad:'linear-gradient(135deg,#f093fb,#f5576c)', bio:'First-year MBA at IIM. I\'m highly organized and sociable but not loud. I prefer a clean kitchen and a drama-free living environment. My budget is on the tighter side for now, but I\'m responsible and always pay on time.', prefs:{sleep:'regular',food:'veg',clean:'average',budget:'low'}, labels:{sleep:'⏰ Standard',food:'🌿 Vegetarian',clean:'🧹 Moderate',budget:'💵 Under ₹10k'} },
   { id:'p3', name:'Arjun Patel', age:28, occupation:'Product Designer', city:'Mumbai, MH', emoji:'🎨', avatarGrad:'linear-gradient(135deg,#4facfe,#00f2fe)', bio:'Design lead at a Series B startup. I\'m a night owl but super clean and considerate. I love good coffee, minimal interiors, and thoughtful conversations. My space reflects my aesthetic — clean lines, warm lighting, good vibes.', prefs:{sleep:'late',food:'omni',clean:'neat',budget:'high'}, labels:{sleep:'🌙 Night Owl',food:'🍗 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} },
-  { id:'p4', name:'Sara Khan', age:27, occupation:'Architect', city:'Hyderabad, TS', emoji:'🏛️', avatarGrad:'linear-gradient(135deg,#43e97b,#38f9d7)', bio:'Working on sustainable housing projects. I\'m early to bed, tidy, and vegetarian. I enjoy quiet evenings, good books, and the occasional board game. I thrive in well-organized environments and bring that energy home.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌅 Early Bird',food:'🌱 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
-  { id:'p5', name:'Dev Malhotra', age:30, occupation:'Startup Founder', city:'Pune, MH', emoji:'🚀', avatarGrad:'linear-gradient(135deg,#fa709a,#fee140)', bio:'Building an AI startup. My schedule is unconventional but I\'m entirely self-sufficient. I respect shared spaces and am fine with any food arrangement. Looking for someone who values independence and mutual respect.', prefs:{sleep:'late',food:'omni',clean:'average',budget:'high'}, labels:{sleep:'🦉 Night Owl',food:'🍖 Non-Veg',clean:'🧹 Moderate',budget:'💎 ₹20k+'} },
-  { id:'p6', name:'Sneha Iyer', age:23, occupation:'UX Researcher', city:'Chennai, TN', emoji:'🔬', avatarGrad:'linear-gradient(135deg,#a18cd1,#fbc2eb)', bio:'Junior researcher at a health-tech company. I prefer a vegan kitchen, early mornings, and a well-organized flat. I\'m introverted but warm — love a quiet home with good natural light and plants.', prefs:{sleep:'early',food:'vegan',clean:'neat',budget:'low'}, labels:{sleep:'🌅 Early Bird',food:'🌿 Vegan',clean:'✨ Very Neat',budget:'💵 Under ₹10k'} },
+  { id:'p4', name:'Sara Khan', age:27, occupation:'Architect', city:'Hyderabad, TS', emoji:'🏛️', avatarGrad:'linear-gradient(135deg,#43e97b,#38f9d7)', bio:'Working on sustainable housing projects. I\'m early to bed, tidy, and vegetarian. I enjoy quiet evenings, good books, and the occasional board game.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌅 Early Bird',food:'🌱 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
+  { id:'p5', name:'Dev Malhotra', age:30, occupation:'Startup Founder', city:'Pune, MH', emoji:'🚀', avatarGrad:'linear-gradient(135deg,#fa709a,#fee140)', bio:'Building an AI startup. My schedule is unconventional but I\'m entirely self-sufficient. Looking for someone who values independence and mutual respect.', prefs:{sleep:'late',food:'omni',clean:'average',budget:'high'}, labels:{sleep:'🦉 Night Owl',food:'🍖 Non-Veg',clean:'🧹 Moderate',budget:'💎 ₹20k+'} },
+  { id:'p6', name:'Sneha Iyer', age:23, occupation:'UX Researcher', city:'Chennai, TN', emoji:'🔬', avatarGrad:'linear-gradient(135deg,#a18cd1,#fbc2eb)', bio:'Junior researcher at a health-tech company. I prefer a vegan kitchen, early mornings, and a well-organized flat.', prefs:{sleep:'early',food:'vegan',clean:'neat',budget:'low'}, labels:{sleep:'🌅 Early Bird',food:'🌿 Vegan',clean:'✨ Very Neat',budget:'💵 Under ₹10k'} },
   { id:'p7', name:'Karan Verma', age:25, occupation:'Data Scientist', city:'Bangalore, KA', emoji:'📊', avatarGrad:'linear-gradient(135deg,#ffecd2,#fcb69f)', bio:'ML engineer working fully remote. I tend to work late but I\'m quiet and tidy. Happy to share cooking duties on weekends.', prefs:{sleep:'late',food:'veg',clean:'neat',budget:'medium'}, labels:{sleep:'🌙 Night Owl',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
   { id:'p8', name:'Aisha Siddiqui', age:26, occupation:'Marketing Manager', city:'Delhi, DL', emoji:'📣', avatarGrad:'linear-gradient(135deg,#89f7fe,#66a6ff)', bio:'Brand manager. Social on weekends, focused during the week. I keep common areas clean and am flexible about food.', prefs:{sleep:'regular',food:'omni',clean:'average',budget:'medium'}, labels:{sleep:'⏰ Standard',food:'🍗 Non-Veg',clean:'🧹 Moderate',budget:'💰 ₹10k–₹20k'} },
   { id:'p9', name:'Rohan Gupta', age:29, occupation:'Financial Analyst', city:'Mumbai, MH', emoji:'📈', avatarGrad:'linear-gradient(135deg,#d4fc79,#96e6a1)', bio:'Works in investment banking — long hours but impeccably organized at home. Looking for someone mature, financially responsible, and low-drama.', prefs:{sleep:'early',food:'omni',clean:'neat',budget:'high'}, labels:{sleep:'🌅 Early Bird',food:'🍖 Non-Veg',clean:'✨ Very Neat',budget:'💎 ₹20k+'} }
 ];
 
-let currentUser = null, userPrefs = {}, isSaved = false;
-let profileData = null;
+let currentUser = null, userPrefs = {}, isSaved = false, profileData = null;
 
 const DIM_META = {
-  sleep: { icon:'🌙', label:'Sleep Schedule', color:'linear-gradient(90deg,#7c5cfc,#a78bfa)', iconBg:'rgba(124,92,252,.12)', iconColor:'#a78bfa' },
-  food: { icon:'🍽️', label:'Food Preference', color:'linear-gradient(90deg,#f97316,#fb923c)', iconBg:'rgba(249,115,22,.12)', iconColor:'#fb923c' },
-  clean: { icon:'✨', label:'Cleanliness', color:'linear-gradient(90deg,#38bdf8,#7dd3fc)', iconBg:'rgba(56,189,248,.12)', iconColor:'#38bdf8' },
-  budget: { icon:'💰', label:'Budget Range', color:'linear-gradient(90deg,#34d399,#6ee7b7)', iconBg:'rgba(52,211,153,.12)', iconColor:'#34d399' }
+  sleep:{ icon:'🌙', label:'Sleep Schedule', color:'linear-gradient(90deg,#7c5cfc,#a78bfa)', iconBg:'rgba(124,92,252,.12)', iconColor:'#a78bfa' },
+  food:{ icon:'🍽️', label:'Food Preference', color:'linear-gradient(90deg,#f97316,#fb923c)', iconBg:'rgba(249,115,22,.12)', iconColor:'#fb923c' },
+  clean:{ icon:'✨', label:'Cleanliness', color:'linear-gradient(90deg,#38bdf8,#7dd3fc)', iconBg:'rgba(56,189,248,.12)', iconColor:'#38bdf8' },
+  budget:{ icon:'💰', label:'Budget Range', color:'linear-gradient(90deg,#34d399,#6ee7b7)', iconBg:'rgba(52,211,153,.12)', iconColor:'#34d399' }
 };
 
 onAuthStateChanged(auth, async user => {
@@ -187,7 +182,6 @@ onAuthStateChanged(auth, async user => {
   const pid = localStorage.getItem('selectedRoommate');
   profileData = PROFILES.find(p => p.id === pid) || PROFILES[0];
 
-  // Check if saved
   try {
     const savedSnap = await getDoc(doc(db, "users", user.uid, "saved", profileData.id));
     isSaved = savedSnap.exists();
@@ -280,7 +274,6 @@ function renderProfile() {
         <span class="tag tb">${p.labels.budget}</span>
       </div>
     </div>
-
     <div class="glass-card">
       <div class="sec-header"><div class="sec-icon" style="background:rgba(56,189,248,.12);color:#38bdf8">⚡</div>Lifestyle Preferences</div>
       <div class="ls-grid">
@@ -296,7 +289,6 @@ function renderProfile() {
         }).join('')}
       </div>
     </div>
-
     <div class="glass-card">
       <div class="sec-header"><div class="sec-icon" style="background:rgba(52,211,153,.12);color:#34d399">📊</div>Compatibility Breakdown</div>
       <div class="prog-list">
@@ -314,7 +306,6 @@ function renderProfile() {
       </div>
       <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
     </div>
-
     <div class="glass-card">
       <div class="sec-header"><div class="sec-icon" style="background:rgba(124,92,252,.12);color:#a78bfa">✦</div>AI Compatibility Insight</div>
       <div class="ai-intro">Our AI will analyze your profiles and give a personalized compatibility explanation.</div>
@@ -323,13 +314,12 @@ function renderProfile() {
         <span id="insightText">✦ Generate Insight</span>
       </button>
       <div class="ai-output" id="insightOut">
-        <div class="ai-output-head"><div class="spinner-sm" id="insightSpin2"></div>✦ AI Analysis</div>
+        <div class="ai-output-head">✦ AI Analysis</div>
         <div class="ai-body" id="insightBody"></div>
       </div>
     </div>
   </div>`;
 
-  // Animate ring
   setTimeout(() => {
     document.getElementById('ringEl').style.strokeDashoffset = offset;
     let c = 0; const step = Math.ceil(score/40);
@@ -341,7 +331,6 @@ function renderProfile() {
     setTimeout(() => document.querySelectorAll('.prog-fill').forEach(b => b.style.width = b.dataset.w + '%'), 200);
   }, 300);
 
-  // Radar chart
   const ctx = document.getElementById('radarChart').getContext('2d');
   const grad = ctx.createLinearGradient(0,0,0,250);
   grad.addColorStop(0,'rgba(124,92,252,0.4)');
@@ -364,8 +353,7 @@ function renderProfile() {
 }
 
 window.connectRoommate = () => {
-  const pid = profileData.id;
-  localStorage.setItem('chatWith', pid);
+  localStorage.setItem('chatWith', profileData.id);
   localStorage.setItem('chatWithName', profileData.name);
   window.location.href = 'chat.html';
 };
@@ -409,16 +397,8 @@ window.generateInsight = async () => {
   const body = document.getElementById('insightBody');
   btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Analyzing...';
   out.classList.add('visible'); body.textContent = 'Generating...';
-
   const p = window._profile, up = window._userPrefs;
-  const prompt = `As a roommate compatibility expert, analyze if these two people would be good roommates in 60-70 words. Be specific and helpful.
-
-Person 1 (the user): sleep=${up.sleep || 'unknown'}, food=${up.food || 'unknown'}, cleanliness=${up.clean || 'unknown'}, budget=${up.budget || 'unknown'}
-
-Person 2 (${p.name}): sleep=${p.prefs.sleep}, food=${p.prefs.food}, cleanliness=${p.prefs.clean}, budget=${p.prefs.budget}
-
-Start with "${p.name.split(' ')[0]} and you would..."`;
-
+  const prompt = `As a roommate compatibility expert, analyze if these two people would be good roommates in 60-70 words. Be specific and helpful. Person 1: sleep=${up.sleep||'unknown'}, food=${up.food||'unknown'}, cleanliness=${up.clean||'unknown'}, budget=${up.budget||'unknown'}. Person 2 (${p.name}): sleep=${p.prefs.sleep}, food=${p.prefs.food}, cleanliness=${p.prefs.clean}, budget=${p.prefs.budget}. Start with "${p.name.split(' ')[0]} and you would..."`;
   try {
     const result = await callAI(prompt);
     typeText(body, result || getFallbackInsight(p, up));
@@ -432,24 +412,22 @@ window.generateIcebreaker = async () => {
   const text = document.getElementById('iceText');
   const body = document.getElementById('icebreakerBody');
   btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Writing...';
-
   const p = window._profile, up = window._userPrefs;
-  const prompt = `Write a friendly, natural first message to send to a potential roommate named ${p.name.split(' ')[0]}. Keep it under 40 words. Mention one lifestyle similarity between you both. User: sleep=${up.sleep}, food=${up.food}. ${p.name.split(' ')[0]}: sleep=${p.prefs.sleep}, food=${p.prefs.food}. Don't mention the app by name.`;
-
+  const prompt = `Write a friendly, natural first message to send to a potential roommate named ${p.name.split(' ')[0]}. Keep it under 40 words. Mention one lifestyle similarity. User: sleep=${up.sleep}, food=${up.food}. ${p.name.split(' ')[0]}: sleep=${p.prefs.sleep}, food=${p.prefs.food}. Don't mention the app by name.`;
   try {
     const result = await callAI(prompt);
-    typeText(body, result || `Hey ${p.name.split(' ')[0]}! I came across your profile and we seem to have similar lifestyles — especially with our ${up.sleep === p.prefs.sleep ? 'sleep schedules' : 'general preferences'}. Would love to chat about potentially sharing a flat! 😊`);
+    typeText(body, result || `Hey ${p.name.split(' ')[0]}! We seem to have similar lifestyles. Would love to chat about potentially sharing a flat! 😊`);
   } catch(e) {
-    body.textContent = `Hey ${p.name.split(' ')[0]}! Your profile really caught my eye — we seem like a great potential match. Would love to connect and discuss!`;
+    body.textContent = `Hey ${p.name.split(' ')[0]}! Your profile caught my eye — we seem like a great match. Would love to connect!`;
   }
   btn.disabled = false; spinner.style.display = 'none'; text.textContent = '💬 Regenerate Message';
 };
 
 function getFallbackInsight(p, up) {
   const matches = ['sleep','food','clean','budget'].filter(k => up[k] === p.prefs[k]);
-  if (matches.length >= 3) return `${p.name.split(' ')[0]} and you would make excellent roommates! You share ${matches.join(', ')} — the three strongest predictors of long-term roommate satisfaction. Conflicts are unlikely given your very aligned lifestyles.`;
-  if (matches.length >= 1) return `${p.name.split(' ')[0]} and you align on ${matches.join(' and ')}. The differences in other areas are manageable with clear communication about expectations upfront.`;
-  return `${p.name.split(' ')[0]} and you have quite different lifestyles, but that doesn't mean it can't work! Clear house rules and mutual respect could bridge the gaps. Consider a trial period.`;
+  if (matches.length >= 3) return `${p.name.split(' ')[0]} and you would make excellent roommates! You share ${matches.join(', ')} — the strongest predictors of roommate satisfaction.`;
+  if (matches.length >= 1) return `${p.name.split(' ')[0]} and you align on ${matches.join(' and ')}. Minor differences are manageable with clear communication.`;
+  return `${p.name.split(' ')[0]} and you have different lifestyles, but clear house rules and mutual respect could make it work.`;
 }
 
 window.showToast = (msg, type = 'success') => {
