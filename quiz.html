@@ -25,7 +25,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-h
 .sidebar{background:rgba(8,12,24,.8);backdrop-filter:blur(20px);border-right:1px solid var(--glass-b);padding:32px 24px;display:flex;flex-direction:column;gap:32px;position:sticky;top:0;height:100vh}
 .sidebar-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem}
 .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:9px;display:grid;place-items:center;font-size:.95rem}
-.progress-section{}
 .prog-label{display:flex;justify-content:space-between;margin-bottom:10px;font-size:.8rem;color:var(--t2)}
 .prog-track{height:5px;background:rgba(255,255,255,.08);border-radius:9999px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--v),var(--sky));border-radius:9999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
@@ -121,18 +120,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-h
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
-  authDomain: "roommate-sync-7406b.firebaseapp.com",
-  projectId: "roommate-sync-7406b",
-  storageBucket: "roommate-sync-7406b.firebasestorage.app",
-  messagingSenderId: "358803768388",
-  appId: "1:358803768388:web:d294c051859291cee12811"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -257,13 +255,11 @@ async function submitQuiz() {
   const spinner = document.getElementById('nextSpinner');
   btn.disabled = true; spinner.style.display = 'block';
   try {
-    // ✅ FIXED: Changed updateDoc to setDoc with merge:true
-    // This creates the document if it doesn't exist yet
-    await setDoc(doc(db, "users", currentUser.uid), {
+    await updateDoc(doc(db, "users", currentUser.uid), {
       quiz: answers,
       quizCompleted: true,
       quizCompletedAt: serverTimestamp()
-    }, { merge: true });
+    });
     // Save to localStorage as backup
     Object.entries(answers).forEach(([k,v]) => localStorage.setItem(k, v));
     window.location.href = 'result.html';
