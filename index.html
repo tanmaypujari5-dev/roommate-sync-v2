@@ -17,8 +17,6 @@
 }
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
-
-/* BG */
 .bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;animation:drift 18s ease-in-out infinite alternate}
 .o1{width:560px;height:560px;background:radial-gradient(circle,#7c5cfc,transparent 70%);top:-120px;left:-100px}
@@ -26,16 +24,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-h
 .o3{width:380px;height:380px;background:radial-gradient(circle,#f472b6,transparent 70%);bottom:10%;left:20%;animation-delay:-12s}
 @keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.05)}100%{transform:translate(-20px,20px) scale(.97)}}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
-
-/* NAV */
 nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,12,24,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-b)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.3rem}
 .brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:10px;display:grid;place-items:center;font-size:1.1rem}
 .nav-links{display:flex;gap:8px}
 .nav-link{padding:8px 16px;color:var(--t2);font-size:.875rem;font-weight:500;text-decoration:none;border-radius:8px;transition:var(--tr)}
 .nav-link:hover{color:var(--t1);background:var(--glass)}
-
-/* HERO */
 .page-wrapper{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
 .hero{flex:1;display:grid;grid-template-columns:1fr 440px;gap:60px;align-items:center;max-width:1200px;margin:0 auto;padding:60px 40px;width:100%}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.3);border-radius:9999px;font-size:.8rem;font-weight:600;color:#a78bfa;margin-bottom:24px;letter-spacing:.04em;text-transform:uppercase}
@@ -46,8 +40,6 @@ h1{font-family:'Outfit',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weigh
 .trust-row{display:flex;gap:16px;flex-wrap:wrap}
 .trust-chip{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9999px;font-size:.82rem;color:var(--t2)}
 .trust-dot{width:7px;height:7px;border-radius:50%}
-
-/* AUTH CARD */
 .auth-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(24px);overflow:hidden;position:relative}
 .auth-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,transparent 60%);pointer-events:none}
 .tab-row{display:flex;padding:6px;background:rgba(0,0,0,.2);margin:24px 24px 0;border-radius:12px;position:relative}
@@ -114,7 +106,6 @@ footer a{color:var(--t2);text-decoration:none}
       <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log In</button>
       <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
     </div>
-
     <div class="card-body">
       <!-- LOGIN FORM -->
       <div id="loginForm">
@@ -196,7 +187,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
   authDomain: "roommate-sync-7406b.firebaseapp.com",
@@ -206,25 +196,28 @@ const firebaseConfig = {
   appId: "1:358803768388:web:d294c051859291cee12811"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Redirect if already logged in
+// If already logged in → redirect, if not → stay here
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const snap = await getDoc(doc(db, "users", user.uid));
-    if (snap.exists() && snap.data().quizCompleted) {
-      window.location.href = "find-roommates.html";
-    } else {
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists() && snap.data().quizCompleted) {
+        window.location.href = "find-roommates.html";
+      } else {
+        window.location.href = "quiz.html";
+      }
+    } catch(e) {
       window.location.href = "quiz.html";
     }
   }
+  // Not logged in → do nothing, stay on this page
 });
 
-// Tab switching
 window.switchTab = (tab) => {
   const slide = document.getElementById('tabSlide');
   const loginBtn = document.getElementById('tabLogin');
@@ -278,10 +271,13 @@ window.handleLogin = async () => {
   setLoading('login', true);
   try {
     await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged handles redirect
   } catch(e) {
     setLoading('login', false);
     const msg = e.code === 'auth/user-not-found' ? 'No account found with this email' :
-                e.code === 'auth/wrong-password' ? 'Incorrect password' : 'Login failed. Please try again.';
+                e.code === 'auth/wrong-password' ? 'Incorrect password' :
+                e.code === 'auth/invalid-credential' ? 'Invalid email or password' :
+                'Login failed. Please try again.';
     showToast(msg, 'error');
   }
 };
@@ -303,12 +299,18 @@ window.handleSignup = async () => {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(cred.user, { displayName: name });
     await setDoc(doc(db, "users", cred.user.uid), {
-      name, email, uid: cred.user.uid,
-      quizCompleted: false, createdAt: serverTimestamp()
+      name: name,
+      displayName: name,
+      email: email,
+      uid: cred.user.uid,
+      quizCompleted: false,
+      createdAt: serverTimestamp()
     });
+    // onAuthStateChanged handles redirect to quiz
   } catch(e) {
     setLoading('signup', false);
-    const msg = e.code === 'auth/email-already-in-use' ? 'An account with this email already exists' : 'Signup failed. Please try again.';
+    const msg = e.code === 'auth/email-already-in-use' ? 'An account with this email already exists' :
+                'Signup failed. Please try again.';
     showToast(msg, 'error');
   }
 };
@@ -320,8 +322,12 @@ window.googleLogin = async () => {
     const snap = await getDoc(doc(db, "users", user.uid));
     if (!snap.exists()) {
       await setDoc(doc(db, "users", user.uid), {
-        name: user.displayName, email: user.email, uid: user.uid,
-        quizCompleted: false, createdAt: serverTimestamp()
+        name: user.displayName,
+        displayName: user.displayName,
+        email: user.email,
+        uid: user.uid,
+        quizCompleted: false,
+        createdAt: serverTimestamp()
       });
     }
   } catch(e) {
