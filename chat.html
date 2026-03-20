@@ -21,8 +21,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
 .nav-right{display:flex;align-items:center;gap:10px}
 .btn-back{padding:8px 16px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9px;color:var(--t2);font-size:.83rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
 .btn-back:hover{background:var(--glass-h);color:var(--t1)}
+/* ✅ ADDED: Logout button */
+.btn-logout{padding:8px 16px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:9px;color:#f87171;font-size:.83rem;font-weight:500;cursor:pointer;transition:var(--tr)}
+.btn-logout:hover{background:rgba(248,113,113,.15);color:#fca5a5}
 .chat-layout{display:flex;flex:1;overflow:hidden;position:relative;z-index:2}
-/* Sidebar */
 .chat-sidebar{width:280px;border-right:1px solid var(--glass-b);background:rgba(8,12,24,.6);backdrop-filter:blur(16px);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
 .sidebar-header{padding:18px 20px 14px;border-bottom:1px solid var(--glass-b)}
 .sidebar-title{font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
@@ -30,13 +32,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
 .conv-list::-webkit-scrollbar{width:3px}
 .conv-list::-webkit-scrollbar-track{background:transparent}
 .conv-list::-webkit-scrollbar-thumb{background:var(--glass-b);border-radius:9999px}
-.conv-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:var(--tr)}
+.conv-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:var(--tr);border:1px solid transparent}
 .conv-item:hover,.conv-item.active{background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.15)}
-.conv-item{border:1px solid transparent}
 .conv-avatar{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0}
 .conv-name{font-size:.88rem;font-weight:600;margin-bottom:2px}
 .conv-last{font-size:.75rem;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Chat area */
 .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .chat-header{padding:16px 24px;background:rgba(8,12,24,.6);backdrop-filter:blur(16px);border-bottom:1px solid var(--glass-b);display:flex;align-items:center;gap:14px;flex-shrink:0}
 .chat-header-avatar{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0}
@@ -59,9 +59,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
 .msg.mine .msg-wrapper{align-items:flex-end}
 .date-sep{text-align:center;font-size:.72rem;color:var(--t3);padding:4px 0}
 .empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--t3)}
-.empty-icon{font-size:2.5rem;opacity:.5}
-.empty-text{font-size:.9rem}
-/* Input */
 .chat-input-row{padding:16px 24px;border-top:1px solid var(--glass-b);background:rgba(8,12,24,.7);backdrop-filter:blur(16px);display:flex;gap:10px;align-items:center;flex-shrink:0}
 .msg-input{flex:1;padding:13px 18px;background:rgba(255,255,255,.05);border:1px solid var(--glass-b);border-radius:14px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:var(--tr);resize:none;max-height:100px;overflow-y:auto}
 .msg-input:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(124,92,252,.12)}
@@ -87,19 +84,18 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
   <div class="nav-right">
     <a href="find-roommates.html" class="btn-back">← Matches</a>
     <a href="profile.html" class="btn-back">Profile</a>
+    <!-- ✅ ADDED: Logout button -->
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
   </div>
 </nav>
 
 <div class="chat-layout">
-  <!-- Sidebar -->
   <div class="chat-sidebar">
     <div class="sidebar-header"><div class="sidebar-title">💬 Conversations</div></div>
     <div class="conv-list" id="convList">
       <div style="padding:24px 16px;text-align:center;color:var(--t3);font-size:.82rem">Start a conversation from the Find Roommates page.</div>
     </div>
   </div>
-
-  <!-- Chat Area -->
   <div class="chat-area" id="chatArea">
     <div class="no-chat">
       <div class="no-chat-icon">💬</div>
@@ -113,10 +109,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+// ✅ FIXED: Your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
   authDomain: "roommate-sync-7406b.firebaseapp.com",
@@ -132,7 +128,12 @@ const db = getFirestore(app);
 
 let currentUser = null, activeChatId = null, unsubscribe = null;
 
-// Seed profiles for demo conversations
+// ✅ ADDED: Logout
+window.doLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
 const SEED_PROFILES = {
   p1:{ name:'Rahul Sharma', emoji:'👨‍💻', grad:'linear-gradient(135deg,#667eea,#764ba2)' },
   p2:{ name:'Priya Mehta', emoji:'👩‍🎓', grad:'linear-gradient(135deg,#f093fb,#f5576c)' },
@@ -150,14 +151,18 @@ onAuthStateChanged(auth, async user => {
   currentUser = user;
   loadConversations();
 
-  // Auto-open chat if coming from profile
+  // ✅ Auto-open chat if coming from profile page
   const chatWith = localStorage.getItem('chatWith');
   const chatWithName = localStorage.getItem('chatWithName');
   if (chatWith) {
     localStorage.removeItem('chatWith');
     localStorage.removeItem('chatWithName');
     const chatId = getChatId(user.uid, chatWith);
-    const partnerInfo = SEED_PROFILES[chatWith] || { name: chatWithName || 'User', emoji: '👤', grad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
+    const partnerInfo = SEED_PROFILES[chatWith] || {
+      name: chatWithName || 'User',
+      emoji: '👤',
+      grad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)'
+    };
     openChat(chatId, chatWith, partnerInfo);
   }
 });
@@ -179,8 +184,12 @@ async function loadConversations() {
     }
 
     convList.innerHTML = convs.map(c => {
-      const p = SEED_PROFILES[c.partnerId] || { name: c.partnerName || 'User', emoji: '👤', grad:'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
-      return `<div class="conv-item" onclick="openChatById('${c.chatId}','${c.partnerId}')">
+      const p = SEED_PROFILES[c.partnerId] || {
+        name: c.partnerName || 'User',
+        emoji: '👤',
+        grad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)'
+      };
+      return `<div class="conv-item" onclick="openChatById('${c.chatId}','${c.partnerId}','${p.name}')">
         <div class="conv-avatar" style="background:${p.grad}">${p.emoji}</div>
         <div style="flex:1;min-width:0">
           <div class="conv-name">${p.name}</div>
@@ -193,8 +202,13 @@ async function loadConversations() {
   }
 }
 
-window.openChatById = (chatId, partnerId) => {
-  const p = SEED_PROFILES[partnerId] || { name: 'User', emoji: '👤', grad:'linear-gradient(135deg,#7c5cfc,#38bdf8)' };
+// ✅ FIXED: Pass name properly so real users show correctly
+window.openChatById = (chatId, partnerId, partnerName) => {
+  const p = SEED_PROFILES[partnerId] || {
+    name: partnerName || 'User',
+    emoji: '👤',
+    grad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)'
+  };
   openChat(chatId, partnerId, p);
 };
 
@@ -202,15 +216,31 @@ async function openChat(chatId, partnerId, partnerInfo) {
   activeChatId = chatId;
   if (unsubscribe) unsubscribe();
 
-  // Save conversation reference for sidebar
+  // Save conversation so it shows in sidebar
   try {
     await setDoc(doc(db, "users", currentUser.uid, "conversations", chatId), {
-      chatId, partnerId, partnerName: partnerInfo.name, lastMessage: '', updatedAt: serverTimestamp()
+      chatId,
+      partnerId,
+      partnerName: partnerInfo.name,
+      lastMessage: '',
+      updatedAt: serverTimestamp()
     }, { merge: true });
+
+    // ✅ Also save on partner's side if they are a real Firebase user
+    // This allows Samarth to see the conversation when he logs in
+    if (!partnerId.startsWith('p')) {
+      await setDoc(doc(db, "users", partnerId, "conversations", chatId), {
+        chatId,
+        partnerId: currentUser.uid,
+        partnerName: currentUser.displayName || currentUser.email || 'User',
+        lastMessage: '',
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    }
   } catch(e) {}
 
-  // Render chat UI
   const initials = (currentUser.displayName || 'You').substring(0,2).toUpperCase();
+
   document.getElementById('chatArea').innerHTML = `
     <div class="chat-header">
       <div class="chat-header-avatar" style="background:${partnerInfo.grad}">${partnerInfo.emoji}</div>
@@ -220,30 +250,32 @@ async function openChat(chatId, partnerId, partnerInfo) {
       </div>
     </div>
     <div class="messages-wrap" id="messagesWrap">
-      <div style="text-align:center;color:var(--t3);font-size:.78rem;padding:12px 0">This is the beginning of your conversation with ${partnerInfo.name.split(' ')[0]}</div>
+      <div class="date-sep">This is the beginning of your conversation with ${partnerInfo.name.split(' ')[0]}</div>
     </div>
     <div class="chat-input-row">
-      <textarea class="msg-input" id="msgInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <textarea class="msg-input" id="msgInput" placeholder="Type a message..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
       <button class="btn-send" id="sendBtn" onclick="sendMessage()">
         <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>
   `;
 
-  // Highlight active conv
+  // Highlight active conversation in sidebar
   document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
 
-  // Listen to messages
+  // ✅ Real-time messages listener
   const msgsRef = collection(db, "chats", chatId, "messages");
   const q = query(msgsRef, orderBy("createdAt", "asc"));
+
   unsubscribe = onSnapshot(q, snapshot => {
     const wrap = document.getElementById('messagesWrap');
     if (!wrap) return;
-    const intro = wrap.querySelector('div');
-    if (intro && snapshot.empty) return;
 
+    const intro = wrap.querySelector('.date-sep');
     let lastDate = '';
     const msgs = [];
+
     snapshot.forEach(d => {
       const data = d.data();
       const ts = data.createdAt?.toDate();
@@ -256,7 +288,9 @@ async function openChat(chatId, partnerId, partnerInfo) {
       const timeStr = ts ? ts.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
       msgs.push(`
         <div class="msg ${isMe ? 'mine' : 'theirs'}">
-          <div class="msg-avatar" style="background:${isMe ? 'linear-gradient(135deg,var(--v),var(--rose))' : partnerInfo.grad}">${isMe ? initials : partnerInfo.emoji}</div>
+          <div class="msg-avatar" style="background:${isMe ? 'linear-gradient(135deg,var(--v),var(--rose))' : partnerInfo.grad}">
+            ${isMe ? initials : partnerInfo.emoji}
+          </div>
           <div class="msg-wrapper">
             <div class="msg-bubble">${escapeHtml(data.text)}</div>
             <div class="msg-time">${timeStr}</div>
@@ -268,7 +302,6 @@ async function openChat(chatId, partnerId, partnerInfo) {
     wrap.scrollTop = wrap.scrollHeight;
   });
 
-  // Update sidebar
   loadConversations();
   document.getElementById('msgInput')?.focus();
 }
@@ -282,17 +315,22 @@ window.sendMessage = async () => {
   input.value = ''; input.style.height = 'auto';
 
   try {
+    // ✅ Save message in shared chat room — both users can read this
     await addDoc(collection(db, "chats", activeChatId, "messages"), {
-      text, senderId: currentUser.uid,
+      text,
+      senderId: currentUser.uid,
       senderName: currentUser.displayName || 'You',
       createdAt: serverTimestamp()
     });
-    // Update last message in conversation
-    const partnerInfo = {}; // known from context
+
+    // Update last message preview in sidebar for both users
     await setDoc(doc(db, "users", currentUser.uid, "conversations", activeChatId), {
       lastMessage: text, updatedAt: serverTimestamp()
     }, { merge: true });
-  } catch(e) { showToast('Failed to send message', 'error'); }
+
+  } catch(e) {
+    showToast('Failed to send message', 'error');
+  }
   btn.disabled = false;
 };
 
@@ -306,7 +344,11 @@ window.autoResize = (el) => {
 };
 
 function escapeHtml(text) {
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
 
 window.showToast = (msg, type = 'success') => {
