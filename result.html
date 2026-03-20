@@ -21,6 +21,9 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700;font-size:1.2rem}
 .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--v),var(--sky));border-radius:9px;display:grid;place-items:center;font-size:.95rem}
 .nav-right{display:flex;align-items:center;gap:12px}
+/* ✅ ADDED: Logout button */
+.btn-logout{padding:8px 18px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:#f87171;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--tr)}
+.btn-logout:hover{background:rgba(248,113,113,.15);color:#fca5a5}
 .nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--rose));display:grid;place-items:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;border:2px solid var(--glass-b)}
 .page{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:48px 40px 80px;width:100%}
 .page-header{text-align:center;margin-bottom:48px}
@@ -31,7 +34,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .glass-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(18px);padding:28px;position:relative;overflow:hidden}
 .glass-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
 .card-title{font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2);margin-bottom:20px}
-/* Score ring */
 .score-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
 .ring-outer{position:relative;width:160px;height:160px}
 .ring-outer svg{transform:rotate(-90deg)}
@@ -45,9 +47,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .good{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.2)}
 .moderate{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
 .score-desc{font-size:.85rem;color:var(--t2);text-align:center;line-height:1.6;margin-top:8px}
-/* Insight bars */
 .insight-list{display:flex;flex-direction:column;gap:20px}
-.insight-item{}
 .insight-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .insight-label{display:flex;align-items:center;gap:9px;font-size:.88rem;font-weight:500;color:var(--t2)}
 .insight-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:1rem}
@@ -55,10 +55,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .bar-track{height:8px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden}
 .bar-fill{height:100%;border-radius:9999px;width:0%;transition:width 1.2s cubic-bezier(.25,1,.5,1)}
 .insight-text{font-size:.78rem;color:var(--t3);margin-top:6px}
-/* Radar */
 .chart-wrap{height:300px;position:relative;margin-top:8px}
-/* AI Insight */
-.ai-section{margin-top:24px}
 .ai-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);backdrop-filter:blur(18px);padding:28px;position:relative;overflow:hidden}
 .ai-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .ai-icon{width:40px;height:40px;background:linear-gradient(135deg,rgba(124,92,252,.2),rgba(56,189,248,.15));border:1px solid rgba(124,92,252,.3);border-radius:12px;display:grid;place-items:center;font-size:1.2rem}
@@ -83,6 +80,8 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 <nav>
   <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
   <div class="nav-right">
+    <!-- ✅ ADDED: Logout button -->
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     <div class="nav-avatar" id="navAvatar">?</div>
   </div>
 </nav>
@@ -94,7 +93,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   </div>
 
   <div class="dashboard-grid">
-    <!-- Score Card -->
     <div class="glass-card">
       <div class="card-title">Your Compatibility Score</div>
       <div class="score-wrap">
@@ -113,24 +111,17 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
       </div>
     </div>
 
-    <!-- Insight Bars -->
     <div class="glass-card">
       <div class="card-title">Lifestyle Match Breakdown</div>
-      <div class="insight-list" id="insightList">
-        <!-- Rendered by JS -->
-      </div>
+      <div class="insight-list" id="insightList"></div>
     </div>
   </div>
 
-  <!-- Radar Chart -->
   <div class="glass-card" style="margin-bottom:24px">
     <div class="card-title">Compatibility Radar</div>
-    <div class="chart-wrap">
-      <canvas id="radarChart"></canvas>
-    </div>
+    <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
   </div>
 
-  <!-- AI Insight -->
   <div class="ai-card">
     <div class="ai-header">
       <div class="ai-icon">✦</div>
@@ -152,10 +143,10 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+// ✅ FIXED: Your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
   authDomain: "roommate-sync-7406b.firebaseapp.com",
@@ -169,22 +160,24 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let userQuiz = {};
-let finalScore = 0;
+// ✅ ADDED: Logout
+window.doLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
+let userQuiz = {}, finalScore = 0;
 
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   const initials = (user.displayName || user.email || 'U').substring(0,2).toUpperCase();
   document.getElementById('navAvatar').textContent = initials;
 
-  // Load quiz from Firestore
   const snap = await getDoc(doc(db, "users", user.uid));
   if (snap.exists()) {
     userQuiz = snap.data().quiz || {};
-    // Also save to localStorage for other pages
     Object.entries(userQuiz).forEach(([k,v]) => localStorage.setItem(k, v));
   } else {
-    // Fallback to localStorage
     userQuiz = {
       sleep: localStorage.getItem('sleep'),
       food: localStorage.getItem('food'),
@@ -196,25 +189,20 @@ onAuthStateChanged(auth, async user => {
 });
 
 const SCORES = {
-  sleep: { early: 90, regular: 80, late: 70 },
-  food: { veg: 85, omni: 90, vegan: 80 },
-  clean: { neat: 95, average: 80, messy: 60 },
-  budget: { low: 85, medium: 90, high: 75 }
+  sleep:{ early:90, regular:80, late:70 },
+  food:{ veg:85, omni:90, vegan:80 },
+  clean:{ neat:95, average:80, messy:60 },
+  budget:{ low:85, medium:90, high:75 }
 };
 
 function renderResults() {
-  const sleep = userQuiz.sleep; const food = userQuiz.food;
-  const clean = userQuiz.clean; const budget = userQuiz.budget;
-
-  const sleepS = SCORES.sleep[sleep] || 70;
-  const foodS = SCORES.food[food] || 70;
-  const cleanS = SCORES.clean[clean] || 70;
-  const budgetS = SCORES.budget[budget] || 70;
-
+  const sleepS = SCORES.sleep[userQuiz.sleep] || 70;
+  const foodS = SCORES.food[userQuiz.food] || 70;
+  const cleanS = SCORES.clean[userQuiz.clean] || 70;
+  const budgetS = SCORES.budget[userQuiz.budget] || 70;
   finalScore = Math.round((sleepS + foodS + cleanS + budgetS) / 4);
   window._quizData = userQuiz;
 
-  // Score ring
   const circ = 2 * Math.PI * 70;
   const ring = document.getElementById('ringFill');
   const color = finalScore >= 85 ? '#4ade80' : finalScore >= 70 ? '#38bdf8' : '#fbbf24';
@@ -228,60 +216,42 @@ function renderResults() {
     }, 20);
   }, 400);
 
-  // Badge
   const badge = document.getElementById('matchBadge');
   if (finalScore >= 85) { badge.textContent = '⭐ Excellent Match Potential'; badge.className = 'match-badge excellent'; }
   else if (finalScore >= 70) { badge.textContent = '✓ Good Compatibility'; badge.className = 'match-badge good'; }
   else { badge.textContent = '~ Moderate Compatibility'; badge.className = 'match-badge moderate'; }
-
   document.getElementById('scoreDesc').textContent = `Your score of ${finalScore}% indicates strong compatibility potential with similarly-minded roommates.`;
 
-  // Insight bars
   const labels = {
-    sleep: { icon: '🌙', bg: 'rgba(124,92,252,.12)', color: '#a78bfa', grad: 'linear-gradient(90deg,#7c5cfc,#a78bfa)', name: 'Sleep Schedule', text: { early:'Early bird — matches best with morning people.', regular:'Standard schedule — very compatible.', late:'Night owl — needs similar roommate.' } },
-    food: { icon: '🍽️', bg: 'rgba(249,115,22,.12)', color: '#fb923c', grad: 'linear-gradient(90deg,#f97316,#fb923c)', name: 'Food Preference', text: { veg:'Vegetarian — kitchen harmony is key.', omni:'Flexible eater — highly compatible.', vegan:'Strict vegan — needs aligned kitchen.' } },
-    clean: { icon: '✨', bg: 'rgba(56,189,248,.12)', color: '#38bdf8', grad: 'linear-gradient(90deg,#38bdf8,#7dd3fc)', name: 'Cleanliness', text: { neat:'Very tidy — pairs well with organized people.', average:'Balanced cleanliness.', messy:'Relaxed — needs a compatible roommate.' } },
-    budget: { icon: '💰', bg: 'rgba(52,211,153,.12)', color: '#34d399', grad: 'linear-gradient(90deg,#34d399,#6ee7b7)', name: 'Budget Range', text: { low:'Under ₹10k — budget-friendly options.', medium:'₹10k–₹20k — most compatible range.', high:'₹20k+ — premium comfort seeker.' } }
+    sleep:{ icon:'🌙', bg:'rgba(124,92,252,.12)', color:'#a78bfa', grad:'linear-gradient(90deg,#7c5cfc,#a78bfa)', name:'Sleep Schedule', text:{ early:'Early bird — matches best with morning people.', regular:'Standard schedule — very compatible.', late:'Night owl — needs similar roommate.' } },
+    food:{ icon:'🍽️', bg:'rgba(249,115,22,.12)', color:'#fb923c', grad:'linear-gradient(90deg,#f97316,#fb923c)', name:'Food Preference', text:{ veg:'Vegetarian — kitchen harmony is key.', omni:'Flexible eater — highly compatible.', vegan:'Strict vegan — needs aligned kitchen.' } },
+    clean:{ icon:'✨', bg:'rgba(56,189,248,.12)', color:'#38bdf8', grad:'linear-gradient(90deg,#38bdf8,#7dd3fc)', name:'Cleanliness', text:{ neat:'Very tidy — pairs well with organized people.', average:'Balanced cleanliness.', messy:'Relaxed — needs a compatible roommate.' } },
+    budget:{ icon:'💰', bg:'rgba(52,211,153,.12)', color:'#34d399', grad:'linear-gradient(90deg,#34d399,#6ee7b7)', name:'Budget Range', text:{ low:'Under ₹10k — budget-friendly options.', medium:'₹10k–₹20k — most compatible range.', high:'₹20k+ — premium comfort seeker.' } }
   };
 
-  const list = document.getElementById('insightList');
-  list.innerHTML = Object.entries(labels).map(([key, meta]) => {
+  document.getElementById('insightList').innerHTML = Object.entries(labels).map(([key, meta]) => {
     const score = SCORES[key][userQuiz[key]] || 70;
     const text = meta.text[userQuiz[key]] || 'Preference saved.';
-    return `
-      <div class="insight-item">
-        <div class="insight-head">
-          <div class="insight-label">
-            <div class="insight-icon" style="background:${meta.bg};color:${meta.color}">${meta.icon}</div>
-            ${meta.name}
-          </div>
-          <div class="insight-pct" style="color:${meta.color}">${score}%</div>
-        </div>
-        <div class="bar-track"><div class="bar-fill" data-w="${score}" style="background:${meta.grad}"></div></div>
-        <div class="insight-text">${text}</div>
-      </div>`;
+    return `<div class="insight-item">
+      <div class="insight-head">
+        <div class="insight-label"><div class="insight-icon" style="background:${meta.bg};color:${meta.color}">${meta.icon}</div>${meta.name}</div>
+        <div class="insight-pct" style="color:${meta.color}">${score}%</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" data-w="${score}" style="background:${meta.grad}"></div></div>
+      <div class="insight-text">${text}</div>
+    </div>`;
   }).join('');
 
-  setTimeout(() => {
-    document.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
-  }, 500);
+  setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w + '%'), 500);
 
-  // Radar
   const ctx = document.getElementById('radarChart').getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 0, 300);
-  grad.addColorStop(0, 'rgba(124,92,252,0.4)');
-  grad.addColorStop(1, 'rgba(56,189,248,0.1)');
+  const grad = ctx.createLinearGradient(0,0,0,300);
+  grad.addColorStop(0,'rgba(124,92,252,0.4)');
+  grad.addColorStop(1,'rgba(56,189,248,0.1)');
   new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: ['Sleep', 'Food', 'Cleanliness', 'Budget'],
-      datasets: [{ label: 'Your Profile', data: [sleepS, foodS, cleanS, budgetS], backgroundColor: grad, borderColor: 'rgba(124,92,252,0.8)', pointBackgroundColor: '#38bdf8', pointBorderColor: '#fff', borderWidth: 2 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { angleLines: { color: 'rgba(255,255,255,0.08)' }, grid: { color: 'rgba(255,255,255,0.08)' }, pointLabels: { color: '#8892aa', font: { family: "'DM Sans', sans-serif", size: 13 } }, ticks: { display: false, min: 0, max: 100 } } },
-      plugins: { legend: { display: false } }
-    }
+    type:'radar',
+    data:{ labels:['Sleep','Food','Cleanliness','Budget'], datasets:[{ data:[sleepS,foodS,cleanS,budgetS], backgroundColor:grad, borderColor:'rgba(124,92,252,0.8)', pointBackgroundColor:'#38bdf8', pointBorderColor:'#fff', borderWidth:2 }] },
+    options:{ responsive:true, maintainAspectRatio:false, scales:{ r:{ angleLines:{color:'rgba(255,255,255,0.08)'}, grid:{color:'rgba(255,255,255,0.08)'}, pointLabels:{color:'#8892aa',font:{family:"'DM Sans', sans-serif",size:13}}, ticks:{display:false} } }, plugins:{legend:{display:false}} }
   });
 }
 
@@ -291,51 +261,38 @@ window.generateAIInsight = async () => {
   const text = document.getElementById('genText');
   const body = document.getElementById('aiBody');
   btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Analyzing...';
-
   const q = window._quizData;
   const prompt = `You are a roommate compatibility expert AI. Based on this person's lifestyle quiz answers, give them a 3-4 sentence personalized compatibility insight explaining what kind of roommate they'd pair best with and why.
 
 Their answers:
-- Sleep schedule: ${q.sleep === 'early' ? 'Early Bird (before 7am)' : q.sleep === 'late' ? 'Night Owl (sleeps late)' : 'Standard (around midnight)'}
+- Sleep schedule: ${q.sleep === 'early' ? 'Early Bird' : q.sleep === 'late' ? 'Night Owl' : 'Standard'}
 - Food: ${q.food === 'veg' ? 'Vegetarian' : q.food === 'vegan' ? 'Strict Vegan' : 'Non-Vegetarian'}
-- Cleanliness: ${q.clean === 'neat' ? 'Very Neat' : q.clean === 'average' ? 'Regularly Tidy' : 'Relaxed/Messy'}
-- Budget: ${q.budget === 'low' ? 'Under ₹10,000/month' : q.budget === 'medium' ? '₹10,000-₹20,000/month' : '₹20,000+/month'}
+- Cleanliness: ${q.clean === 'neat' ? 'Very Neat' : q.clean === 'average' ? 'Regularly Tidy' : 'Relaxed'}
+- Budget: ${q.budget === 'low' ? 'Under ₹10,000/month' : q.budget === 'medium' ? '₹10,000–₹20,000/month' : '₹20,000+/month'}
 
 Be warm, specific, and helpful. Start with "Based on your lifestyle profile, "`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 300,
-        messages: [{ role: "user", content: prompt }]
-      })
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:300, messages:[{ role:"user", content:prompt }] })
     });
     const data = await response.json();
-    const aiText = data.content?.[0]?.text || generateFallback(q);
-    typeText(body, aiText);
-  } catch(e) {
-    typeText(body, generateFallback(q));
-  }
-
+    typeText(body, data.content?.[0]?.text || generateFallback(q));
+  } catch(e) { typeText(body, generateFallback(q)); }
   btn.disabled = false; spinner.style.display = 'none'; text.textContent = '✦ Regenerate';
 };
 
 function generateFallback(q) {
   const sleepDesc = q.sleep === 'early' ? 'an early bird' : q.sleep === 'late' ? 'a night owl' : 'someone with a standard schedule';
   const cleanDesc = q.clean === 'neat' ? 'very tidy' : q.clean === 'average' ? 'moderately clean' : 'relaxed about cleanliness';
-  return `Based on your lifestyle profile, you're ${sleepDesc} who is ${cleanDesc} with a ${q.budget === 'low' ? 'budget-conscious' : q.budget === 'high' ? 'comfort-focused' : 'balanced'} approach to spending. Your ideal roommate would share similar ${q.sleep} schedule habits to avoid noise conflicts, and appreciate a ${q.clean === 'neat' ? 'well-maintained' : 'comfortable'} living space. You're likely to thrive with someone who respects personal boundaries while also being open to occasional shared cooking in the kitchen. Look for profiles with matching sleep and cleanliness preferences — these are the strongest predictors of long-term roommate harmony.`;
+  return `Based on your lifestyle profile, you're ${sleepDesc} who is ${cleanDesc} with a ${q.budget === 'low' ? 'budget-conscious' : q.budget === 'high' ? 'comfort-focused' : 'balanced'} approach to spending. Your ideal roommate would share similar sleep habits to avoid conflicts, and appreciate a ${q.clean === 'neat' ? 'well-maintained' : 'comfortable'} living space. Look for profiles with matching sleep and cleanliness preferences — these are the strongest predictors of long-term roommate harmony.`;
 }
 
 function typeText(el, text) {
-  el.textContent = '';
-  let i = 0;
-  const iv = setInterval(() => {
-    el.textContent += text[i++];
-    if (i >= text.length) clearInterval(iv);
-  }, 18);
+  el.textContent = ''; let i = 0;
+  const iv = setInterval(() => { el.textContent += text[i++]; if (i >= text.length) clearInterval(iv); }, 18);
 }
 </script>
 </body>
