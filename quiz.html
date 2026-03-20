@@ -125,13 +125,14 @@ import { getFirestore, doc, setDoc, updateDoc, serverTimestamp } from "https://w
 
 // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
+  authDomain: "roommate-sync-7406b.firebaseapp.com",
+  projectId: "roommate-sync-7406b",
+  storageBucket: "roommate-sync-7406b.firebasestorage.app",
+  messagingSenderId: "358803768388",
+  appId: "1:358803768388:web:d294c051859291cee12811"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
