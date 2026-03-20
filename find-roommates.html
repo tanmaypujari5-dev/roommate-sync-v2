@@ -23,9 +23,10 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .nav-right{display:flex;align-items:center;gap:12px}
 .btn-outline{padding:8px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:10px;color:var(--t2);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--tr)}
 .btn-outline:hover{background:var(--glass-h);color:var(--t1)}
+.btn-logout{padding:8px 18px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:#f87171;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:var(--tr)}
+.btn-logout:hover{background:rgba(248,113,113,.15);color:#fca5a5}
 .nav-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--v),var(--rose));display:grid;place-items:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:.85rem;border:2px solid var(--glass-b);cursor:pointer}
 .page-wrapper{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 40px 80px;width:100%}
-/* Hero */
 .hero{text-align:center;padding:48px 0 36px}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.3);border-radius:9999px;font-size:.78rem;font-weight:600;color:#a78bfa;margin-bottom:20px;text-transform:uppercase;letter-spacing:.06em}
 .hero h1{font-family:'Outfit',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-.04em;margin-bottom:14px}
@@ -35,7 +36,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .stat-chip{display:flex;align-items:center;gap:8px;padding:8px 18px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9999px;font-size:.85rem;color:var(--t2)}
 .stat-chip strong{color:var(--t1);font-family:'Outfit',sans-serif;font-weight:700}
 .stat-dot{width:7px;height:7px;border-radius:50%}
-/* Filters */
 .filter-box{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);padding:22px 28px;margin-bottom:24px;backdrop-filter:blur(16px)}
 .filter-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .filter-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2)}
@@ -46,7 +46,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .fsel{width:100%;padding:10px 32px 10px 14px;background:rgba(255,255,255,.04);border:1px solid var(--glass-b);border-radius:10px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.875rem;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:var(--tr)}
 .fsel:focus{border-color:var(--v);box-shadow:0 0 0 3px rgba(124,92,252,.12)}
 .fsel option{background:var(--bg2)}
-/* Results meta */
 .results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .results-count{font-size:.9rem;color:var(--t2)}
 .results-count strong{color:var(--t1);font-family:'Outfit',sans-serif}
@@ -54,7 +53,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .sort-label{font-size:.8rem;color:var(--t3)}
 .sort-sel{padding:7px 28px 7px 12px;background:var(--glass);border:1px solid var(--glass-b);border-radius:9px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238892aa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 .sort-sel option{background:var(--bg2)}
-/* Cards */
 .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .roommate-card{background:var(--glass);border:1px solid var(--glass-b);border-radius:var(--rL);padding:26px;backdrop-filter:blur(16px);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s ease,border-color .35s ease;position:relative;overflow:hidden;animation:cardIn .4s ease both}
 .roommate-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
@@ -67,7 +65,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .online-dot{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
 .card-name{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:2px}
 .card-meta{font-size:.78rem;color:var(--t2)}
-/* Score ring (small) */
 .score-sm{position:relative;width:56px;height:56px;flex-shrink:0}
 .score-sm svg{transform:rotate(-90deg)}
 .score-sm-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:4}
@@ -118,6 +115,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
   <a href="index.html" class="brand"><div class="brand-icon">🏠</div>RoommateSync</a>
   <div class="nav-right">
     <a href="result.html" class="btn-outline">← My Results</a>
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     <div class="nav-avatar" id="navAvatar">?</div>
   </div>
 </nav>
@@ -190,10 +188,10 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+// ✅ FIXED: Your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyA3gNrelv_btgR4LOCMRFWl1T0CHGlJdSg",
   authDomain: "roommate-sync-7406b.firebaseapp.com",
@@ -209,7 +207,12 @@ const db = getFirestore(app);
 
 let currentUser = null, userPrefs = {}, allProfiles = [], savedIds = new Set();
 
-// Static seed profiles (appear for all users as demo profiles)
+// ✅ Logout function
+window.doLogout = async () => {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
 const SEED_PROFILES = [
   { id:'p1', name:'Rahul Sharma', age:26, occupation:'Software Engineer', city:'Pune, MH', emoji:'👨‍💻', avatarGrad:'linear-gradient(135deg,#667eea,#764ba2)', bio:'SDE at a fintech startup. I keep my space clean and love cooking on weekends. Looking for someone calm and respectful of shared spaces.', prefs:{sleep:'early',food:'veg',clean:'neat',budget:'medium'}, tags:{sleep:'🌅 Early Bird',food:'🥗 Vegetarian',clean:'✨ Very Neat',budget:'💰 ₹10k–₹20k'} },
   { id:'p2', name:'Priya Mehta', age:24, occupation:'MBA Student', city:'Bangalore, KA', emoji:'👩‍🎓', avatarGrad:'linear-gradient(135deg,#f093fb,#f5576c)', bio:'First-year MBA at IIM. Organized and sociable but not loud. My budget is tight but I always pay on time.', prefs:{sleep:'regular',food:'veg',clean:'average',budget:'low'}, tags:{sleep:'⏰ Standard',food:'🌿 Vegetarian',clean:'🧹 Moderate',budget:'💵 Under ₹10k'} },
@@ -242,7 +245,6 @@ onAuthStateChanged(auth, async user => {
   const initials = (user.displayName || user.email || 'U').substring(0,2).toUpperCase();
   document.getElementById('navAvatar').textContent = initials;
 
-  // Load user prefs
   const snap = await getDoc(doc(db, "users", user.uid));
   if (snap.exists() && snap.data().quiz) {
     userPrefs = snap.data().quiz;
@@ -250,25 +252,30 @@ onAuthStateChanged(auth, async user => {
     userPrefs = { sleep: localStorage.getItem('sleep'), food: localStorage.getItem('food'), clean: localStorage.getItem('clean'), budget: localStorage.getItem('budget') };
   }
 
-  // Load saved profiles
   try {
     const savedSnap = await getDocs(collection(db, "users", user.uid, "saved"));
     savedSnap.forEach(d => savedIds.add(d.id));
   } catch(e) {}
 
-  // Combine seed + any real users (excluding self)
   allProfiles = [...SEED_PROFILES];
-  // Load real user profiles from Firestore
+
+  // ✅ Load real users with their actual names
   try {
     const usersSnap = await getDocs(collection(db, "users"));
     usersSnap.forEach(d => {
       const data = d.data();
       if (d.id !== user.uid && data.quizCompleted && data.quiz) {
+        const realName = data.displayName || data.name || data.email?.split('@')[0] || 'User';
+        const initials2 = realName.substring(0,2).toUpperCase();
         allProfiles.push({
-          id: d.id, name: data.name || 'User', age: data.age || 22,
-          occupation: data.occupation || 'Professional', city: data.city || 'India',
-          emoji: '👤', avatarGrad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)',
-          bio: data.bio || 'Roommate Sync user looking for a compatible roommate.',
+          id: d.id,
+          name: realName,
+          age: data.age || 22,
+          occupation: data.occupation || 'Professional',
+          city: data.city || 'India',
+          emoji: initials2,
+          avatarGrad: 'linear-gradient(135deg,#7c5cfc,#38bdf8)',
+          bio: data.bio || 'Looking for a compatible roommate.',
           prefs: data.quiz,
           tags: {
             sleep: data.quiz.sleep === 'early' ? '🌅 Early Bird' : data.quiz.sleep === 'late' ? '🌙 Night Owl' : '⏰ Standard',
@@ -279,7 +286,7 @@ onAuthStateChanged(auth, async user => {
         });
       }
     });
-  } catch(e) {}
+  } catch(e) { console.error('Error loading users:', e); }
 
   applyFilters();
 });
@@ -360,11 +367,11 @@ function renderCards(profiles) {
         <span class="tag tb">${p.tags.budget}</span>
       </div>
       <div class="card-actions">
-        <button class="btn-insight" onclick="getInsight('${p.id}', this)" data-pid="${p.id}">
+        <button class="btn-insight" onclick="getInsight('${p.id}', this)">
           <div class="spinner-sm"></div>✦ AI Insight
         </button>
         <button class="btn-view" onclick="viewProfile('${p.id}')">View →</button>
-        <button class="btn-save ${saved ? 'saved' : ''}" onclick="toggleSave('${p.id}', this)" title="${saved ? 'Unsave' : 'Save'}">
+        <button class="btn-save ${saved ? 'saved' : ''}" onclick="toggleSave('${p.id}', this)">
           ${saved ? '♥' : '♡'}
         </button>
       </div>
@@ -372,7 +379,6 @@ function renderCards(profiles) {
     </div>`;
   }).join('');
 
-  // Animate rings
   setTimeout(() => {
     document.querySelectorAll('.score-sm-fill').forEach(el => {
       el.style.strokeDashoffset = el.dataset.offset;
@@ -392,29 +398,24 @@ window.getInsight = async (pid, btn) => {
   btn.disabled = true; spinner.style.display = 'block';
   panel.classList.add('visible');
   panel.textContent = 'Generating AI insight...';
-
   const profile = allProfiles.find(p => p.id === pid);
   const up = userPrefs;
   const prompt = `In 2 sentences, explain if this person would be a good roommate match and the main compatibility factor. User's lifestyle: sleep=${up.sleep}, food=${up.food}, clean=${up.clean}, budget=${up.budget}. Profile's lifestyle: sleep=${profile.prefs.sleep}, food=${profile.prefs.food}, clean=${profile.prefs.clean}, budget=${profile.prefs.budget}. Person's name: ${profile.name}. Be concise and specific.`;
-
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 150, messages: [{ role: "user", content: prompt }] })
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:150, messages:[{ role:"user", content:prompt }] })
     });
     const data = await res.json();
     panel.textContent = data.content?.[0]?.text || fallbackInsight(profile, up);
-  } catch(e) {
-    panel.textContent = fallbackInsight(profile, up);
-  }
+  } catch(e) { panel.textContent = fallbackInsight(profile, up); }
   btn.disabled = false; spinner.style.display = 'none';
 };
 
 function fallbackInsight(p, up) {
   const matches = ['sleep','food','clean','budget'].filter(k => up[k] === p.prefs[k]);
   if (matches.length >= 3) return `${p.name} is an excellent match! You align on ${matches.join(', ')} — the top predictors of roommate harmony.`;
-  if (matches.length >= 1) return `${p.name} aligns with you on ${matches.join(' and ')}. Minor differences in other areas are manageable with clear communication.`;
+  if (matches.length >= 1) return `${p.name} aligns with you on ${matches.join(' and ')}. Minor differences are manageable with clear communication.`;
   return `${p.name} has a different lifestyle profile. Compatibility is possible with clear house rules and open communication.`;
 }
 
